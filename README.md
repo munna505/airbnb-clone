@@ -61,9 +61,6 @@ A modern, responsive web application for booking professional cleaning services.
 3. **Set up environment variables**
    Create a `.env.local` file in the root directory:
    ```env
-   # App Configuration
-   NEXT_PUBLIC_BASE_URL=http://localhost:3000
-   
    # Stripe Configuration (Required for payments)
    STRIPE_SECRET_KEY=sk_test_your_actual_stripe_secret_key_here
    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_actual_stripe_publishable_key_here
@@ -262,7 +259,6 @@ The app can be deployed to any platform that supports Next.js:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `NEXT_PUBLIC_BASE_URL` | Your app's base URL | Yes |
 | `STRIPE_SECRET_KEY` | Stripe secret key (starts with `sk_test_` or `sk_live_`) | **Yes** |
 | `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key (starts with `pk_test_` or `pk_live_`) | **Yes** |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (starts with `whsec_`) | **Yes** |

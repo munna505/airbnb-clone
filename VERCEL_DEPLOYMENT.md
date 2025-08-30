@@ -35,9 +35,6 @@ STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 
-# App Configuration
-NEXT_PUBLIC_BASE_URL=http://localhost:3001
-
 # Email/SMS (if using)
 SENDGRID_API_KEY=your_sendgrid_key
 TWILIO_ACCOUNT_SID=your_twilio_sid
@@ -70,9 +67,8 @@ In the Vercel project settings:
    ```
    DATABASE_URL=your_database_connection_string
    STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-   STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
-   NEXT_PUBLIC_BASE_URL=https://your-app.vercel.app
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
    ```
 
 3. **Select all environments** (Production, Preview, Development)

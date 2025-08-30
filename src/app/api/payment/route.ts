@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create a temporary booking ID
+    // Create a t
+    // emporary booking ID
     const bookingId = `booking_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     const pendingBooking = {

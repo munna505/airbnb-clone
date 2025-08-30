@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllConfirmedBookings } from '@/lib/data';
+import { getAllConfirmedBookings, getAllPendingBookings } from '@/lib/data';
 
 export async function POST(_request: NextRequest) {
   // Bookings are now created only after payment confirmation via webhook
@@ -11,14 +11,27 @@ export async function POST(_request: NextRequest) {
 
 export async function GET() {
   try {
-    // Return only confirmed bookings
-    const bookings = await getAllConfirmedBookings();
+    console.log('🔵 API: GET /api/bookings - Fetching all bookings');
+    
+    // Return both pending and confirmed bookings for debugging
+    const confirmedBookings = await getAllConfirmedBookings();
+    const pendingBookings = await getAllPendingBookings();
+    
+    console.log('🔵 API: Confirmed bookings count:', confirmedBookings.length);
+    console.log('🔵 API: Pending bookings count:', pendingBookings.length);
+    console.log('🔵 API: All booking IDs:', [
+      ...confirmedBookings.map(b => b.id),
+      ...pendingBookings.map(b => b.id)
+    ]);
+    
     return NextResponse.json({
       success: true,
-      bookings
+      confirmedBookings,
+      pendingBookings,
+      allBookings: [...confirmedBookings, ...pendingBookings]
     });
   } catch (error) {
-    console.error('Error fetching bookings:', error);
+    console.error('🔴 API: Error fetching bookings:', error);
     return NextResponse.json(
       { error: 'Failed to fetch bookings' },
       { status: 500 }

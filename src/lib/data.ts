@@ -87,14 +87,24 @@ export async function removePendingBooking(bookingId: string) {
 }
 
 export async function findBooking(bookingId: string): Promise<BookingData | undefined> {
+  console.log('🔵 findBooking: Looking for booking with ID:', bookingId);
   try {
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId }
     });
     
-    return booking ? convertToBookingData(booking) : undefined;
+    console.log('🔵 findBooking: Prisma result:', booking);
+    
+    if (booking) {
+      const convertedBooking = convertToBookingData(booking);
+      console.log('🔵 findBooking: Converted booking data:', convertedBooking);
+      return convertedBooking;
+    } else {
+      console.log('🔴 findBooking: No booking found for ID:', bookingId);
+      return undefined;
+    }
   } catch (error) {
-    console.error('Error finding booking:', error);
+    console.error('🔴 findBooking: Error finding booking:', error);
     return undefined;
   }
 }

@@ -29,9 +29,6 @@ This application requires real Stripe payments to function. Follow this guide to
 
 1. **Create or edit `.env.local`** in your project root:
    ```env
-   # App Configuration
-   NEXT_PUBLIC_BASE_URL=http://localhost:3001
-   
    # Stripe Configuration (Required)
    STRIPE_SECRET_KEY=sk_test_your_actual_secret_key_here
    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_actual_publishable_key_here
