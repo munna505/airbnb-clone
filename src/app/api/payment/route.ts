@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
     // Create a temporary booking ID
     const bookingId = `booking_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Store booking data in pending bookings
     const pendingBooking = {
       id: bookingId,
       serviceType,
