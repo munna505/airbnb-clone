@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import Link from 'next/link';
 import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react';
 import Header from '@/components/Header';
 
@@ -66,8 +65,8 @@ export default function ContactPage() {
             Contact Us
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Have questions about our cleaning services? We're here to help! 
-            Send us a message and we'll get back to you as soon as possible.
+            Have questions about our cleaning services? We&apos;re here to help! 
+            Send us a message and we&apos;ll get back to you as soon as possible.
           </p>
         </div>
 
@@ -78,7 +77,7 @@ export default function ContactPage() {
             
             {submitStatus === 'success' && (
               <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-800">Thank you for your message! We'll get back to you soon.</p>
+                <p className="text-green-800">Thank you for your message! We&apos;ll get back to you soon.</p>
               </div>
             )}
 
@@ -175,7 +174,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
                     <p className="text-gray-600">info@cleanpro.com</p>
-                    <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
+                    <p className="text-sm text-gray-500">We&apos;ll respond within 24 hours</p>
                   </div>
                 </div>
 

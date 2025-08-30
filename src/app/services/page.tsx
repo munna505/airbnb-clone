@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Sparkles, Home, Building2, CheckCircle, Clock, Shield, Users } from 'lucide-react';
+import { Home, Building2, CheckCircle, Clock, Shield, Users } from 'lucide-react';
 import Header from '@/components/Header';
 
 export default function ServicesPage() {
@@ -40,7 +40,7 @@ export default function ServicesPage() {
               anyone who wants a consistently clean home.
             </p>
 
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">What's Included:</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">What&apos;s Included:</h3>
             <div className="grid md:grid-cols-2 gap-4 mb-6">
               <div className="space-y-3">
                 <h4 className="font-medium text-gray-900">Bedrooms & Bathrooms</h4>
@@ -123,7 +123,7 @@ export default function ServicesPage() {
               professional presentation.
             </p>
 
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">What's Included:</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">What&apos;s Included:</h3>
                         <div className="space-y-3">
               <h4 className="font-medium text-gray-900">Complete Property</h4>
               <ul className="space-y-2 text-sm text-gray-600">
@@ -195,7 +195,7 @@ export default function ServicesPage() {
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Quality Guarantee</h3>
               <p className="text-gray-600">
                 We stand behind our work with a 100% satisfaction guarantee. 
-                If you're not happy, we'll make it right.
+                If you&apos;re not happy, we&apos;ll make it right.
               </p>
             </div>
           </div>

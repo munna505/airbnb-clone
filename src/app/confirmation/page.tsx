@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, Calendar, Clock, MapPin, Phone, Mail, Home, Building2, User } from 'lucide-react';
@@ -27,20 +27,14 @@ interface BookingData {
   createdAt: string;
 }
 
-export default function ConfirmationPage() {
+function ConfirmationPageContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('bookingId');
   const [booking, setBooking] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (bookingId) {
-      fetchBookingDetails();
-    }
-  }, [bookingId]);
-
-  const fetchBookingDetails = async () => {
+  const fetchBookingDetails = useCallback(async () => {
     try {
       const response = await fetch(`/api/bookings/${bookingId}`);
       if (response.ok) {
@@ -74,7 +68,13 @@ export default function ConfirmationPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [bookingId]);
+
+  useEffect(() => {
+    if (bookingId) {
+      fetchBookingDetails();
+    }
+  }, [fetchBookingDetails]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -104,7 +104,7 @@ export default function ConfirmationPage() {
     );
   }
 
-  if (error || !booking) {
+  if (_error || !booking) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -112,7 +112,7 @@ export default function ConfirmationPage() {
             <CheckCircle className="h-16 w-16 mx-auto" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Booking Not Found</h1>
-          <p className="text-gray-600 mb-6">{error || 'The booking you are looking for does not exist.'}</p>
+          <p className="text-gray-600 mb-6">{_error || 'The booking you are looking for does not exist.'}</p>
           <Link href="/" className="btn-primary">
             Return to Home
           </Link>
@@ -136,7 +136,7 @@ export default function ConfirmationPage() {
             Booking Confirmed!
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Your cleaning service has been successfully booked. We've sent confirmation details 
+            Your cleaning service has been successfully booked. We&apos;ve sent confirmation details 
             to your email and phone number.
           </p>
         </div>
@@ -255,7 +255,7 @@ export default function ConfirmationPage() {
 
         {/* Next Steps */}
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">What's Next?</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">What&apos;s Next?</h3>
           <div className="space-y-4">
             <div className="flex items-start">
               <div className="bg-blue-100 w-6 h-6 rounded-full flex items-center justify-center mr-3 mt-0.5">
@@ -263,7 +263,7 @@ export default function ConfirmationPage() {
               </div>
               <div>
                 <h4 className="font-medium text-gray-900">Confirmation Sent</h4>
-                <p className="text-gray-600">We've sent confirmation details to your email and phone.</p>
+                <p className="text-gray-600">We&apos;ve sent confirmation details to your email and phone.</p>
               </div>
             </div>
             <div className="flex items-start">
@@ -272,7 +272,7 @@ export default function ConfirmationPage() {
               </div>
               <div>
                 <h4 className="font-medium text-gray-900">Team Assignment</h4>
-                <p className="text-gray-600">Our cleaning team will be assigned and you'll receive their details.</p>
+                <p className="text-gray-600">Our cleaning team will be assigned and you&apos;ll receive their details.</p>
               </div>
             </div>
             <div className="flex items-start">
@@ -298,5 +298,20 @@ export default function ConfirmationPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <ConfirmationPageContent />
+    </Suspense>
   );
 }

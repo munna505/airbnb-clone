@@ -39,8 +39,8 @@ if (!global.__confirmedBookings) {
   global.__confirmedBookings = [];
 }
 
-export let pendingBookings: BookingData[] = global.__pendingBookings;
-export let confirmedBookings: BookingData[] = global.__confirmedBookings;
+export const pendingBookings: BookingData[] = global.__pendingBookings;
+export const confirmedBookings: BookingData[] = global.__confirmedBookings;
 
 // Helper functions
 export function addPendingBooking(booking: BookingData) {

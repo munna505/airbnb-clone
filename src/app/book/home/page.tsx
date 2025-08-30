@@ -1,21 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+
 import { Home } from 'lucide-react';
 import Header from '@/components/Header';
 import BookingForm from '@/components/BookingForm';
 
 export default function HomeBookingPage() {
-  const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
-
-  const handleStepChange = (step: number) => {
-    setCurrentStep(step);
+  const handleStepChange = (_step: number) => {
+    // Step change handler
   };
 
-  const handleBookingComplete = async (bookingData: any) => {
+  const handleBookingComplete = async (bookingData: unknown) => {
     // This is now handled by the PaymentForm component
     console.log('Booking data prepared:', bookingData);
   };
@@ -37,7 +32,7 @@ export default function HomeBookingPage() {
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Get your home professionally cleaned with our comprehensive cleaning service. 
-            Customize your booking based on your home's size and needs.
+            Customize your booking based on your home&apos;s size and needs.
           </p>
         </div>
 
@@ -51,7 +46,7 @@ export default function HomeBookingPage() {
         {/* Service Information */}
         <div className="mt-16 max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-            What's Included in Home Cleaning
+            What&apos;s Included in Home Cleaning
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="card">

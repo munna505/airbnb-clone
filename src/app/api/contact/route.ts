@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Mock email function (would use SendGrid or Nodemailer in real app)
-async function sendContactEmail({ name, email, message }: any) {
+async function sendContactEmail({ name, email, message }: { name: string; email: string; message: string }) {
   console.log('Sending contact email to admin...');
   console.log('From:', email);
   console.log('Name:', name);

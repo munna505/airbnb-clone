@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,13 +24,13 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 interface BookingFormProps {
   serviceType: 'home' | 'airbnb';
   onStepChange: (step: number) => void;
-  onBookingComplete: (bookingData: BookingFormData & { price: number; serviceType: string; bedSizes?: Record<number, string> }) => void;
+  onBookingComplete?: (bookingData: BookingFormData & { price: number; serviceType: string; bedSizes?: Record<number, string> }) => void;
 }
 
 export default function BookingForm({ serviceType, onStepChange, onBookingComplete }: BookingFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [price, setPrice] = useState(0);
-  const [bedSizes, setBedSizes] = useState<Record<number, string>>({});
+  const [_bedSizes] = useState<Record<number, string>>({});
 
   const {
     register,
@@ -60,7 +60,7 @@ export default function BookingForm({ serviceType, onStepChange, onBookingComple
   const watchedLivingAreas = watch('livingAreas') || 0;
 
   // Calculate price based on selections
-  const calculatePrice = () => {
+  const calculatePrice = useCallback(() => {
     let basePrice = 0;
     
     // Base pricing
@@ -74,12 +74,12 @@ export default function BookingForm({ serviceType, onStepChange, onBookingComple
     }
     
     return basePrice;
-  };
+  }, [watchedBedrooms, watchedBathrooms, watchedLivingAreas, serviceType]);
 
   // Update price when selections change
   useEffect(() => {
     setPrice(calculatePrice());
-  }, [watchedBedrooms, watchedBathrooms, watchedLivingAreas, serviceType]);
+  }, [watchedBedrooms, watchedBathrooms, watchedLivingAreas, serviceType, calculatePrice]);
 
   const nextStep = async () => {
     let isValid = false;
@@ -106,7 +106,7 @@ export default function BookingForm({ serviceType, onStepChange, onBookingComple
     }
   };
 
-  const onSubmit = (_data: BookingFormData) => {
+  const onSubmit = () => {
     // Move to payment step instead of completing immediately
     setCurrentStep(4);
     onStepChange(4);
@@ -444,7 +444,7 @@ export default function BookingForm({ serviceType, onStepChange, onBookingComple
                 ...watch(),
                 price,
                 serviceType,
-                bedSizes: serviceType === 'airbnb' ? bedSizes : undefined,
+                bedSizes: serviceType === 'airbnb' ? _bedSizes : undefined,
               }}
               onPaymentSuccess={handlePaymentSuccess}
               onPaymentError={handlePaymentError}

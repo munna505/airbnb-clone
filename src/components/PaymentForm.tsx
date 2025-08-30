@@ -85,7 +85,7 @@ function CheckoutForm({ bookingData, onPaymentSuccess, onPaymentError }: Payment
         onPaymentError(stripeError.message || 'Payment failed');
       } else if (paymentIntent?.status === 'succeeded') {
         // Extract booking ID from metadata
-        const bookingId = (paymentIntent as any).metadata?.bookingId;
+        const bookingId = (paymentIntent as { metadata?: { bookingId?: string } }).metadata?.bookingId;
         if (bookingId) {
           onPaymentSuccess(paymentIntent.id, bookingId);
         } else {
