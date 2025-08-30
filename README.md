@@ -228,10 +228,26 @@ STRIPE_PUBLISHABLE_KEY=pk_test_your_actual_stripe_publishable_key_here
    - Forward webhooks: `stripe listen --forward-to localhost:3001/api/webhooks/stripe`
 
 ## Deployment
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically
+
+### Vercel Deployment (Recommended)
+
+1. **Push your code to GitHub**
+2. **Connect your repository to Vercel**
+3. **Add environment variables in Vercel dashboard**
+4. **Deploy automatically**
+
+The project is configured with proper Prisma setup for Vercel deployment:
+- `vercel-build` script ensures Prisma client is generated during build
+- `postinstall` script generates Prisma client after dependencies are installed
+- `vercel.json` is configured with the correct build commands
+
+### Prisma Deployment Fix
+
+If you encounter the error `PrismaClientInitializationError: Prisma has detected that this project was built on Vercel`, the following fixes are already in place:
+
+1. **Build Script**: The `vercel-build` script runs `prisma generate` before building
+2. **Postinstall Hook**: `prisma generate` runs after `npm install`
+3. **Vercel Configuration**: `vercel.json` specifies the correct build command
 
 ### Other Platforms
 The app can be deployed to any platform that supports Next.js:
@@ -239,6 +255,8 @@ The app can be deployed to any platform that supports Next.js:
 - Railway
 - DigitalOcean App Platform
 - AWS Amplify
+
+**Note**: For other platforms, you may need to manually run `prisma generate` during the build process.
 
 ## Environment Variables
 
