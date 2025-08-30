@@ -18,7 +18,7 @@ export default function TestConsolePage() {
           This page is testing console logging functionality.
         </p>
         <p className="text-sm text-gray-500">
-          Check your browser's developer console for logs.
+          Check your browser&apos;s developer console for logs.
         </p>
         <button 
           onClick={() => {

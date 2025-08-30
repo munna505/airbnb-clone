@@ -52,14 +52,14 @@ export async function POST(request: NextRequest) {
 }
 
 // Mock email function (would use SendGrid or Nodemailer in real app)
-async function sendEmail({ to, subject, template, data }: { to: string; subject: string; template: string; data: unknown }) {
-  console.log(`Email to ${to}: ${subject}`);
-  console.log('Email data:', data);
-  // Implementation would go here
-}
+// async function sendEmail({ to, subject, template, data }: { to: string; subject: string; template: string; data: unknown }) {
+//   console.log(`Email to ${to}: ${subject}`);
+//   console.log('Email data:', data);
+//   // Implementation would go here
+// }
 
 // Mock SMS function (would use Twilio in real app)
-async function sendSMS({ to, message }: { to: string; message: string }) {
-  console.log(`SMS to ${to}: ${message}`);
-  // Implementation would go here
-}
+// async function sendSMS({ to, message }: { to: string; message: string }) {
+//   console.log(`SMS to ${to}: ${message}`);
+//   // Implementation would go here
+// }

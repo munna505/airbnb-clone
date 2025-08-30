@@ -1,13 +1,29 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Header from '@/components/Header';
 import PaymentForm from '@/components/PaymentForm';
 
-export default function PaymentPage() {
+interface BookingData {
+  serviceType: 'home' | 'airbnb';
+  bedrooms: number;
+  bathrooms: number;
+  livingAreas: number;
+  price: number;
+  date: string;
+  time: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  address: string;
+  addons?: string[];
+  bedSizes?: Record<string, string>;
+}
+
+function PaymentPageContent() {
   const searchParams = useSearchParams();
-  const [bookingData, setBookingData] = useState<any>(null);
+  const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -63,7 +79,7 @@ export default function PaymentPage() {
           <div className="card text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">No Booking Data Found</h1>
             <p className="text-gray-600 mb-6">
-              It looks like there's no booking data to process. Please go back and complete your booking first.
+              It looks like there&apos;s no booking data to process. Please go back and complete your booking first.
             </p>
             <button
               onClick={() => window.history.back()}
@@ -113,5 +129,20 @@ export default function PaymentPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <PaymentPageContent />
+    </Suspense>
   );
 }

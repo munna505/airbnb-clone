@@ -40,7 +40,7 @@ export default function AirbnbBookingPage() {
         <BookingForm
           serviceType="airbnb"
           onStepChange={handleStepChange}
-          onBookingComplete={handleBookingComplete}
+          _onBookingComplete={handleBookingComplete}
         />
 
         {/* Service Information */}

@@ -1,5 +1,4 @@
 import { prisma } from './prisma';
-import { ServiceType, PaymentStatus } from '@prisma/client';
 
 // Shared data store for bookings
 // Now using Prisma for database operations
@@ -34,7 +33,7 @@ export async function addPendingBooking(booking: BookingData) {
     await prisma.booking.create({
       data: {
         id: booking.id,
-        serviceType: booking.serviceType.toUpperCase() as ServiceType,
+        serviceType: booking.serviceType.toUpperCase() as 'HOME' | 'AIRBNB',
         bedrooms: booking.bedrooms,
         bathrooms: booking.bathrooms,
         livingAreas: booking.livingAreas,
@@ -47,7 +46,7 @@ export async function addPendingBooking(booking: BookingData) {
         time: booking.time,
         addons: booking.addons,
         bedSizes: booking.bedSizes,
-        paymentStatus: PaymentStatus.PENDING,
+        paymentStatus: 'PENDING',
         stripeSessionId: booking.stripeSessionId,
       }
     });
@@ -62,7 +61,7 @@ export async function moveToConfirmedBooking(bookingId: string, stripeSessionId:
     const updatedBooking = await prisma.booking.update({
       where: { id: bookingId },
       data: {
-        paymentStatus: PaymentStatus.COMPLETED,
+        paymentStatus: 'COMPLETED',
         stripeSessionId,
         paymentCompletedAt: new Date(),
       }
@@ -103,7 +102,7 @@ export async function findBooking(bookingId: string): Promise<BookingData | unde
 export async function getAllConfirmedBookings(): Promise<BookingData[]> {
   try {
     const bookings = await prisma.booking.findMany({
-      where: { paymentStatus: PaymentStatus.COMPLETED },
+      where: { paymentStatus: 'COMPLETED' },
       orderBy: { createdAt: 'desc' }
     });
     
@@ -117,7 +116,7 @@ export async function getAllConfirmedBookings(): Promise<BookingData[]> {
 export async function getAllPendingBookings(): Promise<BookingData[]> {
   try {
     const bookings = await prisma.booking.findMany({
-      where: { paymentStatus: PaymentStatus.PENDING },
+      where: { paymentStatus: 'PENDING' },
       orderBy: { createdAt: 'desc' }
     });
     
@@ -129,7 +128,26 @@ export async function getAllPendingBookings(): Promise<BookingData[]> {
 }
 
 // Helper function to convert Prisma model to BookingData interface
-function convertToBookingData(booking: any): BookingData {
+function convertToBookingData(booking: {
+  id: string;
+  serviceType: string;
+  bedrooms: number;
+  bathrooms: number;
+  livingAreas: number;
+  price: number | string | { toString(): string };
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  address: string;
+  date: string;
+  time: string;
+  addons: { linen: boolean; towel: boolean } | null | unknown;
+  bedSizes: Record<string, string> | null | unknown;
+  paymentStatus: string;
+  stripeSessionId: string | null;
+  paymentCompletedAt: Date | null;
+  createdAt: Date;
+}): BookingData {
   return {
     id: booking.id,
     serviceType: booking.serviceType.toLowerCase() as 'home' | 'airbnb',
@@ -143,10 +161,10 @@ function convertToBookingData(booking: any): BookingData {
     address: booking.address,
     date: booking.date,
     time: booking.time,
-    addons: booking.addons,
-    bedSizes: booking.bedSizes,
-    paymentStatus: booking.paymentStatus.toLowerCase() as 'pending' | 'completed',
-    stripeSessionId: booking.stripeSessionId,
+          addons: booking.addons as { linen: boolean; towel: boolean } | undefined,
+      bedSizes: booking.bedSizes as Record<number, string> | undefined,
+      paymentStatus: booking.paymentStatus.toLowerCase() as 'pending' | 'completed',
+      stripeSessionId: booking.stripeSessionId || undefined,
     paymentCompletedAt: booking.paymentCompletedAt?.toISOString(),
     createdAt: booking.createdAt.toISOString(),
   };

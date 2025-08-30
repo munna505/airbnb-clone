@@ -40,7 +40,7 @@ export default function HomeBookingPage() {
         <BookingForm
           serviceType="home"
           onStepChange={handleStepChange}
-          onBookingComplete={handleBookingComplete}
+          _onBookingComplete={handleBookingComplete}
         />
 
         {/* Service Information */}

@@ -87,7 +87,7 @@ function ConfirmationPageContent() {
           setLoading(false);
         }
       }
-    } catch (error) {
+    } catch (_error) {
       setError('Failed to load booking details');
       setLoading(false);
     }

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+interface PrismaPricingItem {
+  id: number;
+  serviceType: string;
+  key: string;
+  price: { toString(): string };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -17,7 +26,7 @@ export async function GET(request: NextRequest) {
 
       // Convert to the expected format
       const pricingData: Record<string, number> = {};
-      pricing.forEach((item: { key: string; price: any }) => {
+      pricing.forEach((item: PrismaPricingItem) => {
         pricingData[item.key] = Number(item.price);
       });
 
@@ -38,7 +47,7 @@ export async function GET(request: NextRequest) {
       airbnb: {}
     };
 
-    allPricing.forEach((item: { serviceType: string; key: string; price: any }) => {
+    allPricing.forEach((item: PrismaPricingItem) => {
       const serviceTypeKey = item.serviceType.toLowerCase() as 'home' | 'airbnb';
       pricingData[serviceTypeKey][item.key] = Number(item.price);
     });
