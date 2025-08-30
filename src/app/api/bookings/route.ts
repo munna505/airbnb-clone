@@ -12,9 +12,10 @@ export async function POST(_request: NextRequest) {
 export async function GET() {
   try {
     // Return only confirmed bookings
+    const bookings = await getAllConfirmedBookings();
     return NextResponse.json({
       success: true,
-      bookings: getAllConfirmedBookings()
+      bookings
     });
   } catch (error) {
     console.error('Error fetching bookings:', error);

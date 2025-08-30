@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Calendar, Clock, User, Mail, Phone, MapPin } from 'lucide-react';
-import PaymentForm from './PaymentForm';
 
 const bookingSchema = z.object({
   bedrooms: z.number().min(1, 'At least 1 bedroom required'),
@@ -107,20 +106,23 @@ export default function BookingForm({ serviceType, onStepChange, onBookingComple
   };
 
   const onSubmit = () => {
-    // Move to payment step instead of completing immediately
-    setCurrentStep(4);
-    onStepChange(4);
+    // Store booking data and navigate to payment page
+    const formData = watch();
+    const bookingData = {
+      ...formData,
+      price,
+      serviceType,
+      bedSizes: serviceType === 'airbnb' ? _bedSizes : undefined,
+    };
+    
+    // Store in localStorage for the payment page
+    localStorage.setItem('bookingData', JSON.stringify(bookingData));
+    
+    // Navigate to payment page
+    window.location.href = '/payment';
   };
 
-  const handlePaymentSuccess = (_sessionId: string, bookingId: string) => {
-    // Redirect to confirmation page with booking ID
-    window.location.href = `/confirmation?bookingId=${bookingId}`;
-  };
 
-  const handlePaymentError = (error: string) => {
-    console.error('Payment error:', error);
-    alert(`Payment failed: ${error}. Please try again.`);
-  };
 
   const hasCurrentStepErrors = () => {
     if (currentStep === 1) {
@@ -145,13 +147,13 @@ export default function BookingForm({ serviceType, onStepChange, onBookingComple
           <div 
             className="absolute top-4 left-4 h-1 rounded-full transition-all duration-700 ease-out progress-fill"
             style={{ 
-              width: `${((currentStep - 1) / 3) * 100}%`,
+              width: `${((currentStep - 1) / 2) * 100}%`,
               maxWidth: 'calc(100% - 2rem)',
-              '--progress-width': `${((currentStep - 1) / 3) * 100}%`
+              '--progress-width': `${((currentStep - 1) / 2) * 100}%`
             } as React.CSSProperties}
           ></div>
           
-          {[1, 2, 3, 4].map((step) => (
+          {[1, 2, 3].map((step) => (
             <div key={step} className="relative z-10">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-500 ease-out ${
@@ -169,7 +171,6 @@ export default function BookingForm({ serviceType, onStepChange, onBookingComple
           <span className={currentStep >= 1 ? 'text-blue-600 font-medium' : ''}>Service Details</span>
           <span className={currentStep >= 2 ? 'text-blue-600 font-medium' : ''}>Personal Info</span>
           <span className={currentStep >= 3 ? 'text-blue-600 font-medium' : ''}>Schedule</span>
-          <span className={currentStep >= 4 ? 'text-blue-600 font-medium' : ''}>Payment</span>
         </div>
       </div>
 
@@ -313,7 +314,7 @@ export default function BookingForm({ serviceType, onStepChange, onBookingComple
                   Address
                 </label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+w                  <MapPin className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
                   <textarea
                     {...register('address')}
                     className="input-field pl-10"
@@ -417,50 +418,13 @@ export default function BookingForm({ serviceType, onStepChange, onBookingComple
                 type="submit"
                 className="btn-primary"
               >
-                Continue to Payment
+                Proceed to Payment
               </button>
             </div>
           </div>
         )}
 
-        {/* Step 4: Payment */}
-        {currentStep === 4 && (
-          <div className="card">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Complete Your Payment</h2>
-            
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-semibold text-gray-900 mb-2">Booking Summary</h3>
-              <div className="space-y-1 text-sm text-gray-600">
-                <div>Service: {serviceType === 'home' ? 'Home Cleaning' : 'Airbnb Cleaning'}</div>
-                <div>Bedrooms: {watchedBedrooms}</div>
-                <div>Bathrooms: {watchedBathrooms}</div>
-                <div>Living Areas: {watchedLivingAreas}</div>
-                <div className="font-semibold text-gray-900 mt-2">Total: ${price}</div>
-              </div>
-            </div>
 
-            <PaymentForm
-              bookingData={{
-                ...watch(),
-                price,
-                serviceType,
-                bedSizes: serviceType === 'airbnb' ? _bedSizes : undefined,
-              }}
-              onPaymentSuccess={handlePaymentSuccess}
-              onPaymentError={handlePaymentError}
-            />
-
-            <div className="mt-6">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="btn-secondary"
-              >
-                Back to Schedule
-              </button>
-            </div>
-          </div>
-        )}
       </form>
     </div>
   );

@@ -30,19 +30,33 @@ interface BookingData {
 function ConfirmationPageContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('bookingId');
+  
   const [booking, setBooking] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [_error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Add immediate useEffect to verify client-side execution
+
 
   const fetchBookingDetails = useCallback(async () => {
     try {
       const response = await fetch(`/api/bookings/${bookingId}`);
       if (response.ok) {
         const bookingData = await response.json();
+        console.log('🔵 Booking Data:', bookingData);
         
-        // Verify payment was actually successful
-        if (bookingData.paymentStatus !== 'completed') {
-          setError('Payment not completed. Please complete your payment to confirm your booking.');
+        // If payment is pending, wait a bit and retry (webhook might be processing)
+        if (bookingData.paymentStatus === 'pending' && retryCount < 10) {
+          setRetryCount(prev => prev + 1);
+          setTimeout(() => {
+            fetchBookingDetails();
+          }, 1500); // Wait 1.5 seconds and retry
+          return;
+        } else if (bookingData.paymentStatus === 'pending') {
+          // After 10 retries, show the booking anyway (payment was successful)
+          // The webhook will eventually process and update the status
+          setBooking(bookingData);
           setLoading(false);
           return;
         }
@@ -61,20 +75,44 @@ function ConfirmationPageContent() {
           }),
         });
       } else {
-        setError('Booking not found');
+        // If booking not found, it might still be processing
+        // Wait a bit and retry (but limit retries)
+        if (retryCount < 5) {
+          setRetryCount(prev => prev + 1);
+          setTimeout(() => {
+            fetchBookingDetails();
+          }, 2000);
+        } else {
+          setError('Booking not found after multiple attempts. Please contact support.');
+          setLoading(false);
+        }
       }
     } catch (error) {
       setError('Failed to load booking details');
-    } finally {
       setLoading(false);
     }
-  }, [bookingId]);
+  }, [bookingId, retryCount]);
 
   useEffect(() => {
     if (bookingId) {
       fetchBookingDetails();
+    } else {
+      setLoading(false);
     }
   }, [fetchBookingDetails]);
+
+  // Poll for payment status updates if payment is still pending
+  useEffect(() => {
+    if (booking && booking.paymentStatus === 'pending') {
+      const interval = setInterval(() => {
+        fetchBookingDetails();
+      }, 5000); // Check every 5 seconds
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [booking, fetchBookingDetails]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -98,7 +136,12 @@ function ConfirmationPageContent() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading booking details...</p>
+          <p className="text-gray-600">
+            {retryCount > 0 
+              ? `Processing payment confirmation... (Attempt ${retryCount}/5)`
+              : 'Loading booking details...'
+            }
+          </p>
         </div>
       </div>
     );
@@ -228,8 +271,13 @@ function ConfirmationPageContent() {
               <span className={`ml-2 font-medium ${
                 booking.paymentStatus === 'completed' ? 'text-green-600' : 'text-yellow-600'
               }`}>
-                {booking.paymentStatus === 'completed' ? 'Paid' : 'Pending'}
+                {booking.paymentStatus === 'completed' ? 'Paid' : 'Processing'}
               </span>
+              {booking.paymentStatus === 'pending' && (
+                <div className="mt-1 text-xs text-gray-500">
+                  Payment is being processed. This may take a few moments to update.
+                </div>
+              )}
             </div>
           </div>
         </div>

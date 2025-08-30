@@ -3,9 +3,7 @@ import Stripe from 'stripe';
 import { addPendingBooking } from '@/lib/data';
 
 // Check if Stripe is configured
-const isStripeConfigured = process.env.STRIPE_SECRET_KEY && 
-  process.env.STRIPE_SECRET_KEY !== 'your_stripe_secret_key' && 
-  process.env.STRIPE_SECRET_KEY !== 'sk_test_your_actual_stripe_test_secret_key_here';
+const isStripeConfigured = process.env.STRIPE_SECRET_KEY
 
 let stripe: Stripe | null = null;
 
@@ -20,8 +18,10 @@ if (isStripeConfigured) {
 }
 
 export async function POST(request: NextRequest) {
+  console.log('🔵 Payment API route called');
   try {
     const body = await request.json();
+    console.log('📦 Request body received:', JSON.stringify(body, null, 2));
     const { 
       serviceType, bedrooms, bathrooms, livingAreas, price,
       customerName, customerEmail, customerPhone, address, date, time,
@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
 
     if (!serviceType || !bedrooms || !bathrooms || !livingAreas || !price ||
         !customerName || !customerEmail || !customerPhone || !address || !date || !time) {
+      console.log('❌ Missing required fields');
       return NextResponse.json(
         { error: 'Missing required booking fields' },
         { status: 400 }
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
     };
 
-    addPendingBooking(pendingBooking);
+    await addPendingBooking(pendingBooking);
 
     // Require Stripe to be configured for real payments
     if (!stripe || !isStripeConfigured) {
@@ -88,6 +89,7 @@ export async function POST(request: NextRequest) {
       success: true,
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
+      bookingId: bookingId,
     });
 
   } catch (error) {

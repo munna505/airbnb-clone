@@ -2,14 +2,21 @@
 
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 // Load Stripe outside of component to avoid recreating on every render
 const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
 if (!stripePublishableKey) {
-  console.error('Stripe publishable key is not set. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your environment variables.');
+  console.error(
+    'Stripe publishable key is not set. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your environment variables.'
+  );
 }
 
 const stripePromise = loadStripe(stripePublishableKey!);
@@ -33,19 +40,25 @@ interface PaymentFormProps {
   onPaymentError: (error: string) => void;
 }
 
-function CheckoutForm({ bookingData, onPaymentSuccess, onPaymentError }: PaymentFormProps) {
+function CheckoutForm({
+  bookingData,
+  onPaymentSuccess,
+  onPaymentError,
+}: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    console.log('🔵 Payment form submitted');
 
     if (!stripe || !elements) {
-      setError('Payment system is not ready. Please refresh the page and try again.');
+      console.log('❌ Stripe not ready');
+      setError(
+        'Payment system is not ready. Please refresh the page and try again.'
+      );
       return;
     }
 
@@ -53,6 +66,7 @@ function CheckoutForm({ bookingData, onPaymentSuccess, onPaymentError }: Payment
     setError(null);
 
     try {
+      console.log('📤 Sending payment request to server...');
       // Create payment intent on the server
       const response = await fetch('/api/payment', {
         method: 'POST',
@@ -62,31 +76,37 @@ function CheckoutForm({ bookingData, onPaymentSuccess, onPaymentError }: Payment
         body: JSON.stringify(bookingData),
       });
 
+      console.log('📥 Server response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.log('❌ Server error:', errorData);
         throw new Error(errorData.error || 'Failed to create payment session');
       }
 
-      const { clientSecret } = await response.json();
+      const { clientSecret, bookingId } = await response.json();
+      console.log('✅ Payment intent created successfully');
 
       // Confirm the payment with Stripe
-      const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement)!,
-          billing_details: {
-            name: bookingData.customerName,
-            email: bookingData.customerEmail,
+      const { error: stripeError, paymentIntent } =
+        await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: elements.getElement(CardElement)!,
+            billing_details: {
+              name: bookingData.customerName,
+              email: bookingData.customerEmail,
+            },
           },
-        },
-      });
-
+        });
+      console.log('🔵 Payment intent:', paymentIntent);
       if (stripeError) {
         setError(stripeError.message || 'Payment failed');
         onPaymentError(stripeError.message || 'Payment failed');
       } else if (paymentIntent?.status === 'succeeded') {
-        // Extract booking ID from metadata
-        const bookingId = (paymentIntent as { metadata?: { bookingId?: string } }).metadata?.bookingId;
+        console.log(paymentIntent);
         if (bookingId) {
+          // Payment succeeded, proceed to confirmation
+          // The webhook will handle booking confirmation asynchronously
           onPaymentSuccess(paymentIntent.id, bookingId);
         } else {
           setError('Payment succeeded but booking ID not found');
@@ -94,7 +114,8 @@ function CheckoutForm({ bookingData, onPaymentSuccess, onPaymentError }: Payment
         }
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Payment failed';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Payment failed';
       setError(errorMessage);
       onPaymentError(errorMessage);
     } finally {
@@ -127,15 +148,16 @@ function CheckoutForm({ bookingData, onPaymentSuccess, onPaymentError }: Payment
             <span className="font-semibold">Payment System Error</span>
           </div>
           <p className="text-red-600 text-sm">
-            {!stripePublishableKey 
+            {!stripePublishableKey
               ? 'Stripe is not configured. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your environment variables.'
-              : 'Payment system is loading. Please wait a moment and try again.'
-            }
+              : 'Payment system is loading. Please wait a moment and try again.'}
           </p>
           {!stripePublishableKey && (
             <div className="mt-4 p-3 bg-red-100 rounded text-xs text-red-700">
-              <strong>Debug Info:</strong><br />
-              NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: {stripePublishableKey || 'NOT SET'}
+              <strong>Debug Info:</strong>
+              <br />
+              NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:{' '}
+              {stripePublishableKey || 'NOT SET'}
             </div>
           )}
         </div>
@@ -146,8 +168,10 @@ function CheckoutForm({ bookingData, onPaymentSuccess, onPaymentError }: Payment
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-white p-6 rounded-lg border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Information</h3>
-        
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Payment Information
+        </h3>
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -167,8 +191,12 @@ function CheckoutForm({ bookingData, onPaymentSuccess, onPaymentError }: Payment
 
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold text-gray-900">Total Amount:</span>
-              <span className="text-2xl font-bold text-blue-600">${bookingData.price}</span>
+              <span className="text-lg font-semibold text-gray-900">
+                Total Amount:
+              </span>
+              <span className="text-2xl font-bold text-blue-600">
+                ${bookingData.price}
+              </span>
             </div>
           </div>
         </div>

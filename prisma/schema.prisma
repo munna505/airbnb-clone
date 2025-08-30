@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Booking {
+  id                 String        @id @default(cuid())
+  serviceType        ServiceType
+  bedrooms           Int
+  bathrooms          Int
+  livingAreas        Int
+  price              Decimal       @db.Decimal(10, 2)
+  customerName       String
+  customerEmail      String
+  customerPhone      String
+  address            String
+  date               String
+  time               String
+  addons             Json?
+  bedSizes           Json?
+  paymentStatus      PaymentStatus @default(PENDING)
+  stripeSessionId    String?
+  paymentCompletedAt DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@map("bookings")
+}
+
+model Pricing {
+  id          Int         @id @default(autoincrement())
+  serviceType ServiceType
+  key         String      @db.VarChar(50)
+  price       Decimal     @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
+
+  @@unique([serviceType, key])
+  @@map("pricing")
+}
+
+enum ServiceType {
+  HOME
+  AIRBNB
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+}

@@ -9,7 +9,7 @@ export async function GET(
     const { id } = await params;
     
     // Check both pending and confirmed bookings
-    const booking = findBooking(id);
+    const booking = await findBooking(id);
     
     if (!booking) {
       return NextResponse.json(

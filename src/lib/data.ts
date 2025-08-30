@@ -1,5 +1,8 @@
+import { prisma } from './prisma';
+import { ServiceType, PaymentStatus } from '@prisma/client';
+
 // Shared data store for bookings
-// In a real app, this would be a database connection
+// Now using Prisma for database operations
 
 export interface BookingData {
   id: string;
@@ -25,59 +28,126 @@ export interface BookingData {
   paymentCompletedAt?: string;
 }
 
-// Mock database arrays - using global variables to persist across requests
-declare global {
-  var __pendingBookings: BookingData[];
-  var __confirmedBookings: BookingData[];
-}
-
-// Initialize global variables if they don't exist
-if (!global.__pendingBookings) {
-  global.__pendingBookings = [];
-}
-if (!global.__confirmedBookings) {
-  global.__confirmedBookings = [];
-}
-
-export const pendingBookings: BookingData[] = global.__pendingBookings;
-export const confirmedBookings: BookingData[] = global.__confirmedBookings;
-
-// Helper functions
-export function addPendingBooking(booking: BookingData) {
-  pendingBookings.push(booking);
-}
-
-export function moveToConfirmedBooking(bookingId: string, stripeSessionId: string) {
-  const index = pendingBookings.findIndex(b => b.id === bookingId);
-  if (index !== -1) {
-    const booking = pendingBookings[index];
-    const confirmedBooking: BookingData = {
-      ...booking,
-      paymentStatus: 'completed',
-      stripeSessionId,
-      paymentCompletedAt: new Date().toISOString(),
-    };
-    confirmedBookings.push(confirmedBooking);
-    pendingBookings.splice(index, 1);
-    return confirmedBooking;
+// Helper functions using Prisma
+export async function addPendingBooking(booking: BookingData) {
+  try {
+    await prisma.booking.create({
+      data: {
+        id: booking.id,
+        serviceType: booking.serviceType.toUpperCase() as ServiceType,
+        bedrooms: booking.bedrooms,
+        bathrooms: booking.bathrooms,
+        livingAreas: booking.livingAreas,
+        price: booking.price,
+        customerName: booking.customerName,
+        customerEmail: booking.customerEmail,
+        customerPhone: booking.customerPhone,
+        address: booking.address,
+        date: booking.date,
+        time: booking.time,
+        addons: booking.addons,
+        bedSizes: booking.bedSizes,
+        paymentStatus: PaymentStatus.PENDING,
+        stripeSessionId: booking.stripeSessionId,
+      }
+    });
+  } catch (error) {
+    console.error('Error adding pending booking:', error);
+    throw error;
   }
-  return null;
 }
 
-export function removePendingBooking(bookingId: string) {
-  const index = pendingBookings.findIndex(b => b.id === bookingId);
-  if (index !== -1) {
-    pendingBookings.splice(index, 1);
+export async function moveToConfirmedBooking(bookingId: string, stripeSessionId: string) {
+  try {
+    const updatedBooking = await prisma.booking.update({
+      where: { id: bookingId },
+      data: {
+        paymentStatus: PaymentStatus.COMPLETED,
+        stripeSessionId,
+        paymentCompletedAt: new Date(),
+      }
+    });
+
+    return convertToBookingData(updatedBooking);
+  } catch (error) {
+    console.error('Error moving booking to confirmed:', error);
+    return null;
+  }
+}
+
+export async function removePendingBooking(bookingId: string) {
+  try {
+    await prisma.booking.delete({
+      where: { id: bookingId }
+    });
     return true;
+  } catch (error) {
+    console.error('Error removing pending booking:', error);
+    return false;
   }
-  return false;
 }
 
-export function findBooking(bookingId: string): BookingData | undefined {
-  return confirmedBookings.find(b => b.id === bookingId) || 
-         pendingBookings.find(b => b.id === bookingId);
+export async function findBooking(bookingId: string): Promise<BookingData | undefined> {
+  try {
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId }
+    });
+    
+    return booking ? convertToBookingData(booking) : undefined;
+  } catch (error) {
+    console.error('Error finding booking:', error);
+    return undefined;
+  }
 }
 
-export function getAllConfirmedBookings(): BookingData[] {
-  return confirmedBookings;
+export async function getAllConfirmedBookings(): Promise<BookingData[]> {
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: { paymentStatus: PaymentStatus.COMPLETED },
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    return bookings.map(convertToBookingData);
+  } catch (error) {
+    console.error('Error getting confirmed bookings:', error);
+    return [];
+  }
+}
+
+export async function getAllPendingBookings(): Promise<BookingData[]> {
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: { paymentStatus: PaymentStatus.PENDING },
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    return bookings.map(convertToBookingData);
+  } catch (error) {
+    console.error('Error getting pending bookings:', error);
+    return [];
+  }
+}
+
+// Helper function to convert Prisma model to BookingData interface
+function convertToBookingData(booking: any): BookingData {
+  return {
+    id: booking.id,
+    serviceType: booking.serviceType.toLowerCase() as 'home' | 'airbnb',
+    bedrooms: booking.bedrooms,
+    bathrooms: booking.bathrooms,
+    livingAreas: booking.livingAreas,
+    price: Number(booking.price),
+    customerName: booking.customerName,
+    customerEmail: booking.customerEmail,
+    customerPhone: booking.customerPhone,
+    address: booking.address,
+    date: booking.date,
+    time: booking.time,
+    addons: booking.addons,
+    bedSizes: booking.bedSizes,
+    paymentStatus: booking.paymentStatus.toLowerCase() as 'pending' | 'completed',
+    stripeSessionId: booking.stripeSessionId,
+    paymentCompletedAt: booking.paymentCompletedAt?.toISOString(),
+    createdAt: booking.createdAt.toISOString(),
+  };
 }
