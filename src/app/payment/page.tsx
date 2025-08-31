@@ -60,38 +60,9 @@ function PaymentPageContent() {
     alert(`Payment failed: ${error}. Please try again.`);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading payment form...</p>
-        </div>
-      </div>
-    );
-  }
 
-  if (!bookingData) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header variant="back" />
-        <div className="max-w-2xl mx-auto px-4 py-12">
-          <div className="card text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">No Booking Data Found</h1>
-            <p className="text-gray-600 mb-6">
-              It looks like there&apos;s no booking data to process. Please go back and complete your booking first.
-            </p>
-            <button
-              onClick={() => window.history.back()}
-              className="btn-primary"
-            >
-              Go Back
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -111,21 +82,24 @@ function PaymentPageContent() {
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
             <h3 className="font-semibold text-gray-900 mb-2">Booking Summary</h3>
             <div className="space-y-1 text-sm text-gray-600">
-              <div>Service: {bookingData.serviceType === 'home' ? 'Home Cleaning' : 'Airbnb Cleaning'}</div>
-              <div>Bedrooms: {bookingData.bedrooms}</div>
-              <div>Bathrooms: {bookingData.bathrooms}</div>
-              <div>Living Areas: {bookingData.livingAreas}</div>
-              <div>Date: {bookingData.date}</div>
-              <div>Time: {bookingData.time}</div>
-              <div className="font-semibold text-gray-900 mt-2">Total: ${bookingData.price}</div>
+              <div>Service: {bookingData?.serviceType === 'home' ? 'Home Cleaning' : 'Airbnb Cleaning'}</div>
+              <div>Bedrooms: {bookingData?.bedrooms}</div>
+              <div>Bathrooms: {bookingData?.bathrooms}</div>
+              <div>Living Areas: {bookingData?.livingAreas}</div>
+              <div>Date: {bookingData?.date}</div>
+              <div>Time: {bookingData?.time}</div>
+              <div className="font-semibold text-gray-900 mt-2">Total: ${bookingData?.price}</div>
             </div>
           </div>
-
-          <PaymentForm
-            bookingData={bookingData}
-            onPaymentSuccess={handlePaymentSuccess}
-            onPaymentError={handlePaymentError}
-          />
+        {
+          bookingData !== null && (
+            <PaymentForm
+              bookingData={bookingData}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentError={handlePaymentError}
+            />
+          )
+        }
         </div>
       </main>
     </div>

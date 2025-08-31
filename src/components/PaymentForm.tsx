@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
   Elements,
@@ -49,6 +49,25 @@ function CheckoutForm({
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isStripeLoading, setIsStripeLoading] = useState(true);
+  const [stripeLoadTimeout, setStripeLoadTimeout] = useState(false);
+
+  useEffect(() => {
+    // Check if Stripe is loaded
+    if (stripe && elements) {
+      setIsStripeLoading(false);
+      setStripeLoadTimeout(false);
+    }
+
+    // Set a timeout to show error if Stripe takes too long to load
+    const timeout = setTimeout(() => {
+      if (!stripe || !elements) {
+        setStripeLoadTimeout(true);
+      }
+    }, 10000); // 10 seconds timeout
+
+    return () => clearTimeout(timeout);
+  }, [stripe, elements]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -79,9 +98,26 @@ function CheckoutForm({
       console.log('📥 Server response status:', response.status);
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.log('❌ Server error:', errorData);
-        throw new Error(errorData.error || 'Failed to create payment session');
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          console.log('❌ Server error:', errorData);
+          throw new Error(errorData.error || 'Failed to create payment session');
+        } else {
+          // Handle non-JSON responses (like HTML error pages)
+          const errorText = await response.text();
+          console.log('❌ Non-JSON error response:', errorText.substring(0, 200));
+          throw new Error('Server error: Payment system is temporarily unavailable. Please try again later.');
+        }
+      }
+
+      // Check if response is JSON before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const errorText = await response.text();
+        console.log('❌ Non-JSON success response:', errorText.substring(0, 200));
+        throw new Error('Server error: Invalid response format. Please try again later.');
       }
 
       const { clientSecret, bookingId } = await response.json();
@@ -105,9 +141,32 @@ function CheckoutForm({
       } else if (paymentIntent?.status === 'succeeded') {
         console.log(paymentIntent);
         if (bookingId) {
-          // Payment succeeded, proceed to confirmation
-          // The webhook will handle booking confirmation asynchronously
-          onPaymentSuccess(paymentIntent.id, bookingId);
+          // Payment succeeded, confirm the booking immediately
+          try {
+            const confirmResponse = await fetch('/api/payment/confirm', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                bookingId: bookingId,
+                paymentIntentId: paymentIntent.id,
+              }),
+            });
+
+            if (confirmResponse.ok) {
+              console.log('✅ Booking confirmed successfully');
+              onPaymentSuccess(paymentIntent.id, bookingId);
+            } else {
+              console.error('❌ Failed to confirm booking');
+              setError('Payment succeeded but booking confirmation failed');
+              onPaymentError('Payment succeeded but booking confirmation failed');
+            }
+          } catch (confirmError) {
+            console.error('❌ Error confirming booking:', confirmError);
+            setError('Payment succeeded but booking confirmation failed');
+            onPaymentError('Payment succeeded but booking confirmation failed');
+          }
         } else {
           setError('Payment succeeded but booking ID not found');
           onPaymentError('Payment succeeded but booking ID not found');
@@ -136,10 +195,55 @@ function CheckoutForm({
         color: '#9e2146',
       },
     },
+    hidePostalCode: true,
+    disableLink: true,
   };
 
-  // Show error if Stripe is not loaded
-  if (!stripe || !elements) {
+
+  // Show loading state while Stripe is loading
+  if (isStripeLoading && !stripeLoadTimeout) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+          <div className="flex items-center justify-center space-x-2 text-blue-600 mb-4">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span className="font-semibold">Loading Payment System...</span>
+          </div>
+          <p className="text-blue-600 text-sm text-center">
+            Please wait while we initialize the secure payment system.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if Stripe failed to load after timeout
+  if (stripeLoadTimeout || (!stripe || !elements)) {
+    return (
+      <div className="space-y-6">re
+        <div className="bg-red-50 p-6 rounded-lg border border-red-200">
+          <div className="flex items-center space-x-2 text-red-600 mb-4">
+            <AlertCircle className="h-5 w-5" />
+            <span className="font-semibold">Payment System Error</span>
+          </div>
+          <p className="text-red-600 text-sm">
+            {stripeLoadTimeout 
+              ? 'Payment system is taking longer than expected to load. Please refresh the page and try again.'
+              : 'Payment system failed to load. Please refresh the page and try again.'}
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error only if Stripe failed to load after timeout or configuration issue
+  if (!stripePublishableKey) {
     return (
       <div className="space-y-6">
         <div className="bg-red-50 p-6 rounded-lg border border-red-200">
@@ -148,18 +252,14 @@ function CheckoutForm({
             <span className="font-semibold">Payment System Error</span>
           </div>
           <p className="text-red-600 text-sm">
-            {!stripePublishableKey
-              ? 'Stripe is not configured. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your environment variables.'
-              : 'Payment system is loading. Please wait a moment and try again.'}
+            Stripe is not configured. Please set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your environment variables.
           </p>
-          {!stripePublishableKey && (
-            <div className="mt-4 p-3 bg-red-100 rounded text-xs text-red-700">
-              <strong>Debug Info:</strong>
-              <br />
-              NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:{' '}
-              {stripePublishableKey || 'NOT SET'}
-            </div>
-          )}
+          <div className="mt-4 p-3 bg-red-100 rounded text-xs text-red-700">
+            <strong>Debug Info:</strong>
+            <br />
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:{' '}
+            {stripePublishableKey || 'NOT SET'}
+          </div>
         </div>
       </div>
     );

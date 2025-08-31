@@ -11,6 +11,7 @@
     "postinstall": "prisma generate",
     "vercel-build": "prisma generate && next build",
     "setup": "node scripts/setup-prisma.js",
+    "setup:env": "node scripts/setup-env.js",
     "db:setup": "prisma generate && prisma db push && npm run db:seed"
   },
   "dependencies": {

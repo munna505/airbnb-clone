@@ -19,6 +19,12 @@ if (isStripeConfigured) {
 
 export async function POST(request: NextRequest) {
   console.log('🔵 Payment API route called');
+  
+  // Set proper headers for JSON response
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  
   try {
     const body = await request.json();
     console.log('📦 Request body received:', JSON.stringify(body, null, 2));
@@ -33,7 +39,7 @@ export async function POST(request: NextRequest) {
       console.log('❌ Missing required fields');
       return NextResponse.json(
         { error: 'Missing required booking fields' },
-        { status: 400 }
+        { status: 400, headers }
       );
     }
 
@@ -60,14 +66,22 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
     };
 
-    await addPendingBooking(pendingBooking);
+    try {
+      await addPendingBooking(pendingBooking);
+    } catch (dbError) {
+      console.error('Database error adding pending booking:', dbError);
+      return NextResponse.json(
+        { error: 'Database error: Unable to save booking. Please try again.' },
+        { status: 500, headers }
+      );
+    }
 
     // Require Stripe to be configured for real payments
     if (!stripe || !isStripeConfigured) {
       console.error('Stripe not configured. Please set up STRIPE_SECRET_KEY in your environment variables.');
       return NextResponse.json(
         { error: 'Payment processing is not configured. Please contact support.' },
-        { status: 503 }
+        { status: 503, headers }
       );
     }
 
@@ -90,13 +104,13 @@ export async function POST(request: NextRequest) {
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
       bookingId: bookingId,
-    });
+    }, { headers });
 
   } catch (error) {
     console.error('Error creating payment intent:', error);
     return NextResponse.json(
       { error: 'Failed to create payment intent' },
-      { status: 500 }
+      { status: 500, headers }
     );
   }
 }
