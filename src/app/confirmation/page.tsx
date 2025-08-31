@@ -36,9 +36,23 @@ interface BookingData {
 
 async function getBookingData(bookingId: string): Promise<BookingData | null> {
   try {
-    // For server-side fetching, we need to use the full URL
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/bookings/${bookingId}`, {
+    // For server-side fetching in Next.js, use relative URL or construct proper URL
+    let url: string;
+    
+    if (process.env.VERCEL_URL) {
+      // On Vercel, use the VERCEL_URL environment variable
+      url = `https://${process.env.VERCEL_URL}/api/bookings/${bookingId}`;
+    } else if (process.env.NEXT_PUBLIC_BASE_URL) {
+      // Use the configured base URL
+      url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/bookings/${bookingId}`;
+    } else {
+      // Fallback to relative URL for local development
+      url = `/api/bookings/${bookingId}`;
+    }
+    
+    console.log('🔵 Fetching booking from URL:', url);
+    
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -57,14 +71,35 @@ async function getBookingData(bookingId: string): Promise<BookingData | null> {
     }
   } catch (error) {
     console.error('Error fetching booking:', error);
+    // Log more details for debugging
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
+    }
     return null;
   }
 }
 
 async function sendConfirmationNotification(bookingId: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    await fetch(`${baseUrl}/api/notify`, {
+    let url: string;
+    
+    if (process.env.VERCEL_URL) {
+      // On Vercel, use the VERCEL_URL environment variable
+      url = `https://${process.env.VERCEL_URL}/api/notify`;
+    } else if (process.env.NEXT_PUBLIC_BASE_URL) {
+      // Use the configured base URL
+      url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/notify`;
+    } else {
+      // Fallback to relative URL for local development
+      url = `/api/notify`;
+    }
+    
+    console.log('🔵 Sending notification to URL:', url);
+    
+    await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
