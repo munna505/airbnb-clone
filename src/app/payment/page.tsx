@@ -24,7 +24,7 @@ interface BookingData {
 function PaymentPageContent() {
   const searchParams = useSearchParams();
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
-  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     // Get booking data from URL parameters or localStorage
@@ -45,7 +45,7 @@ function PaymentPageContent() {
       }
     }
     
-    setLoading(false);
+
   }, [searchParams]);
 
   const handlePaymentSuccess = (sessionId: string, bookingId: string) => {

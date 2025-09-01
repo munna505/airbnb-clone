@@ -22,7 +22,10 @@ A modern, responsive web application for booking professional cleaning services.
 - Real-time payment validation
 
 ### 📧 Communication
-- Email confirmations (SendGrid/Nodemailer)
+- Email confirmations (Gmail SMTP)
+- Welcome emails on signup
+- Login notification emails
+- Payment confirmation emails
 - SMS notifications (Twilio)
 - Contact form for customer support
 
@@ -44,6 +47,7 @@ A modern, responsive web application for booking professional cleaning services.
 - Node.js 18+ 
 - npm or yarn
 - Git
+- Gmail account with 2-Factor Authentication (for email notifications)
 
 ### Installation
 
@@ -66,9 +70,9 @@ A modern, responsive web application for booking professional cleaning services.
    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_actual_stripe_publishable_key_here
    STRIPE_WEBHOOK_SECRET=whsec_your_actual_stripe_webhook_secret_here
    
-   # Email Configuration (SendGrid)
-   SENDGRID_API_KEY=your_sendgrid_api_key
-   SENDGRID_FROM_EMAIL=noreply@yourdomain.com
+   # Email Configuration (Gmail SMTP)
+   GMAIL_USER=your-gmail@gmail.com
+   GMAIL_APP_PASSWORD=your_gmail_app_password
    
    # SMS Configuration (Twilio)
    TWILIO_ACCOUNT_SID=your_twilio_account_sid
@@ -86,6 +90,9 @@ A modern, responsive web application for booking professional cleaning services.
 
 5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+6. **Set up email notifications (optional)**
+   Follow the [Gmail Setup Guide](GMAIL_SETUP.md) to configure email notifications
 
 ## Project Structure
 
@@ -262,7 +269,8 @@ The app can be deployed to any platform that supports Next.js:
 | `STRIPE_SECRET_KEY` | Stripe secret key (starts with `sk_test_` or `sk_live_`) | **Yes** |
 | `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key (starts with `pk_test_` or `pk_live_`) | **Yes** |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (starts with `whsec_`) | **Yes** |
-| `SENDGRID_API_KEY` | SendGrid API key | No |
+| `GMAIL_USER` | Gmail address for sending emails | No |
+| `GMAIL_APP_PASSWORD` | Gmail App Password (requires 2FA) | No |
 | `TWILIO_ACCOUNT_SID` | Twilio account SID | No |
 | `TWILIO_AUTH_TOKEN` | Twilio auth token | No |
 | `DATABASE_URL` | Database connection string | No |

@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getAllConfirmedBookings, getAllPendingBookings } from '@/lib/data';
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   // Bookings are now created only after payment confirmation via webhook
   return NextResponse.json(
     { error: 'Bookings must be created through payment flow' },

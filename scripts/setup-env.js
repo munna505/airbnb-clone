@@ -28,15 +28,20 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_actual_publishable_key_here
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 
 # Email Configuration (Optional - for notifications)
-# Get from SendGrid, Gmail, or other email providers
-SENDGRID_API_KEY=your_sendgrid_api_key_here
-FROM_EMAIL=your-email@example.com
+# Gmail SMTP Configuration
+GMAIL_USER=your-gmail@gmail.com
+GMAIL_APP_PASSWORD=your_gmail_app_password_here
 
 # SMS Configuration (Optional - for notifications)
 # Get from Twilio
 TWILIO_ACCOUNT_SID=your_twilio_account_sid_here
 TWILIO_AUTH_TOKEN=your_twilio_auth_token_here
 TWILIO_PHONE_NUMBER=+1234567890
+
+# NextAuth Configuration (Required for authentication)
+# Generate a random secret: openssl rand -base64 32
+NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_URL=http://localhost:3000
 `;
 
   fs.writeFileSync(envPath, envTemplate);
@@ -52,13 +57,14 @@ console.log('🔍 Checking environment variables...\n');
 const requiredVars = [
   'DATABASE_URL',
   'STRIPE_SECRET_KEY',
-  'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'
+  'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
+  'NEXTAUTH_SECRET'
 ];
 
 const optionalVars = [
   'STRIPE_WEBHOOK_SECRET',
-  'SENDGRID_API_KEY',
-  'FROM_EMAIL',
+  'GMAIL_USER',
+  'GMAIL_APP_PASSWORD',
   'TWILIO_ACCOUNT_SID',
   'TWILIO_AUTH_TOKEN',
   'TWILIO_PHONE_NUMBER'

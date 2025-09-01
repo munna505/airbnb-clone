@@ -21,6 +21,7 @@ export interface BookingData {
     towel: boolean;
   };
   bedSizes?: Record<number, string>;
+  userId?: string | null; // Add user ID field (optional for guest bookings)
   paymentStatus: 'pending' | 'completed';
   createdAt: string;
   stripeSessionId?: string;
@@ -46,6 +47,7 @@ export async function addPendingBooking(booking: BookingData) {
         time: booking.time,
         addons: booking.addons,
         bedSizes: booking.bedSizes,
+        userId: booking.userId, // Add user ID to the booking
         paymentStatus: 'PENDING',
         stripeSessionId: booking.stripeSessionId,
       }
@@ -137,6 +139,23 @@ export async function getAllPendingBookings(): Promise<BookingData[]> {
   }
 }
 
+export async function getUserBookings(userId: string): Promise<BookingData[]> {
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: { 
+        userId: userId,
+        paymentStatus: 'COMPLETED' // Only return completed bookings for users
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    return bookings.map(convertToBookingData);
+  } catch (error) {
+    console.error('Error getting user bookings:', error);
+    return [];
+  }
+}
+
 // Helper function to convert Prisma model to BookingData interface
 function convertToBookingData(booking: {
   id: string;
@@ -153,6 +172,7 @@ function convertToBookingData(booking: {
   time: string;
   addons: { linen: boolean; towel: boolean } | null | unknown;
   bedSizes: Record<string, string> | null | unknown;
+  userId: string | null;
   paymentStatus: string;
   stripeSessionId: string | null;
   paymentCompletedAt: Date | null;
@@ -171,10 +191,11 @@ function convertToBookingData(booking: {
     address: booking.address,
     date: booking.date,
     time: booking.time,
-          addons: booking.addons as { linen: boolean; towel: boolean } | undefined,
-      bedSizes: booking.bedSizes as Record<number, string> | undefined,
-      paymentStatus: booking.paymentStatus.toLowerCase() as 'pending' | 'completed',
-      stripeSessionId: booking.stripeSessionId || undefined,
+    addons: booking.addons as { linen: boolean; towel: boolean } | undefined,
+    bedSizes: booking.bedSizes as Record<number, string> | undefined,
+    userId: booking.userId, // Include user ID in the converted data
+    paymentStatus: booking.paymentStatus.toLowerCase() as 'pending' | 'completed',
+    stripeSessionId: booking.stripeSessionId || undefined,
     paymentCompletedAt: booking.paymentCompletedAt?.toISOString(),
     createdAt: booking.createdAt.toISOString(),
   };

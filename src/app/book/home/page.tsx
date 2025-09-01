@@ -6,14 +6,11 @@ import Header from '@/components/Header';
 import BookingForm from '@/components/BookingForm';
 
 export default function HomeBookingPage() {
-  const handleStepChange = (_step: number) => {
+  const handleStepChange = () => {
     // Step change handler
   };
 
-  const handleBookingComplete = async (bookingData: unknown) => {
-    // This is now handled by the PaymentForm component
-    console.log('Booking data prepared:', bookingData);
-  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,7 +37,6 @@ export default function HomeBookingPage() {
         <BookingForm
           serviceType="home"
           onStepChange={handleStepChange}
-          _onBookingComplete={handleBookingComplete}
         />
 
         {/* Service Information */}

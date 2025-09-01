@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { moveToConfirmedBooking } from '@/lib/data';
+import { sendPaymentCompleteEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   console.log('🔵 Payment confirmation API route called');
@@ -27,6 +28,19 @@ export async function POST(request: NextRequest) {
 
     if (confirmedBooking) {
       console.log('✅ Booking confirmed successfully:', bookingId);
+      
+      // Send payment completion email
+      try {
+        await sendPaymentCompleteEmail(
+          confirmedBooking.customerName,
+          confirmedBooking.customerEmail,
+          confirmedBooking
+        );
+      } catch (error) {
+        console.error('Failed to send payment completion email:', error);
+        // Don't fail payment confirmation if email fails
+      }
+      
       return NextResponse.json({
         success: true,
         booking: confirmedBooking,

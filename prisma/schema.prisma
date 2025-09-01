@@ -7,6 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String
+  password  String
+  phone     String?
+  role      UserRole  @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model Booking {
   id                 String        @id @default(cuid())
   serviceType        ServiceType
@@ -27,6 +46,10 @@ model Booking {
   paymentCompletedAt DateTime?
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
+  
+  // Link to user (optional - for guest bookings)
+  userId             String?
+  user               User?         @relation(fields: [userId], references: [id])
 
   @@map("bookings")
 }

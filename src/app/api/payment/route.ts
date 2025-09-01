@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { addPendingBooking } from '@/lib/data';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 // Check if Stripe is configured
 const isStripeConfigured = process.env.STRIPE_SECRET_KEY
@@ -26,6 +28,16 @@ export async function POST(request: NextRequest) {
   };
   
   try {
+    // Get user session
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+    
+    if (userId) {
+      console.log('👤 User logged in with ID:', userId);
+    } else {
+      console.log('👤 No user logged in - proceeding as guest');
+    }
+    
     const body = await request.json();
     console.log('📦 Request body received:', JSON.stringify(body, null, 2));
     const { 
@@ -62,6 +74,7 @@ export async function POST(request: NextRequest) {
       time,
       addons,
       bedSizes,
+      userId: userId || null, // Add user ID if logged in, null if guest
       paymentStatus: 'pending' as const,
       createdAt: new Date().toISOString(),
     };

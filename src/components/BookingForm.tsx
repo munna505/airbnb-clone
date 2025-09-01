@@ -23,10 +23,10 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 interface BookingFormProps {
   serviceType: 'home' | 'airbnb';
   onStepChange: (step: number) => void;
-  _onBookingComplete?: (bookingData: BookingFormData & { price: number; serviceType: string; bedSizes?: Record<number, string> }) => void;
+
 }
 
-export default function BookingForm({ serviceType, onStepChange, _onBookingComplete }: BookingFormProps) {
+export default function BookingForm({ serviceType, onStepChange }: BookingFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [price, setPrice] = useState(0);
   const [_bedSizes] = useState<Record<number, string>>({});
