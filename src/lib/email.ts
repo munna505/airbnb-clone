@@ -169,7 +169,7 @@ The CleanPro Security Team
     `
   }),
 
-  paymentComplete: (name: string, bookingDetails: any) => ({
+  paymentComplete: (name: string, bookingDetails: Record<string, unknown>) => ({
     subject: 'Payment Confirmed - Your CleanPro Booking is Confirmed!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -265,7 +265,7 @@ The CleanPro Team
 };
 
 // Email sending function
-export const sendEmail = async (to: string, template: keyof typeof emailTemplates, data: any) => {
+export const sendEmail = async (to: string, template: keyof typeof emailTemplates, data: Record<string, unknown>) => {
   try {
     // Check if email is configured
     if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
@@ -278,11 +278,18 @@ export const sendEmail = async (to: string, template: keyof typeof emailTemplate
     
     // Handle different template types
     if (template === 'welcome') {
-      emailTemplate = emailTemplates.welcome(data);
+      emailTemplate = emailTemplates.welcome(data as unknown as string);
     } else if (template === 'login') {
-      emailTemplate = emailTemplates.login(data.name, data.email, data.timestamp);
+      emailTemplate = emailTemplates.login(
+        data.name as unknown as string, 
+        data.email as unknown as string, 
+        data.timestamp as unknown as string
+      );
     } else if (template === 'paymentComplete') {
-      emailTemplate = emailTemplates.paymentComplete(data.name, data);
+      emailTemplate = emailTemplates.paymentComplete(
+        data.name as unknown as string, 
+        data as unknown as Record<string, unknown>
+      );
     } else {
       throw new Error(`Unknown email template: ${template}`);
     }
@@ -306,7 +313,7 @@ export const sendEmail = async (to: string, template: keyof typeof emailTemplate
 
 // Specific email functions
 export const sendWelcomeEmail = async (name: string, email: string) => {
-  return sendEmail(email, 'welcome', name);
+  return sendEmail(email, 'welcome', name as unknown as Record<string, unknown>);
 };
 
 export const sendLoginEmail = async (name: string, email: string) => {
@@ -322,6 +329,6 @@ export const sendLoginEmail = async (name: string, email: string) => {
   return sendEmail(email, 'login', { name, email, timestamp });
 };
 
-export const sendPaymentCompleteEmail = async (name: string, email: string, bookingDetails: any) => {
+export const sendPaymentCompleteEmail = async (name: string, email: string, bookingDetails: Record<string, unknown>) => {
   return sendEmail(email, 'paymentComplete', { name, ...bookingDetails });
 };

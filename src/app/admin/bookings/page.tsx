@@ -19,8 +19,8 @@ interface Booking {
   address: string;
   date: string;
   time: string;
-  addons: any;
-  bedSizes: any;
+  addons: Record<string, unknown>;
+  bedSizes: Record<string, unknown>;
   paymentStatus: 'PENDING' | 'COMPLETED';
   paymentCompletedAt: string | null;
   createdAt: string;

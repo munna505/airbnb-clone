@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         await sendPaymentCompleteEmail(
           confirmedBooking.customerName,
           confirmedBooking.customerEmail,
-          confirmedBooking
+          confirmedBooking as unknown as Record<string, unknown>
         );
       } catch (error) {
         console.error('Failed to send payment completion email:', error);
