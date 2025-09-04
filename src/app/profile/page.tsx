@@ -3,9 +3,10 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Package } from 'lucide-react';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
-export default function ProfilePage() {
-  const { user, loading: authLoading, logout } = useAuth();
+function ProfilePageContent() {
+  const { user, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -20,17 +21,6 @@ export default function ProfilePage() {
     });
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -103,5 +93,13 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <ProtectedRoute>
+      <ProfilePageContent />
+    </ProtectedRoute>
   );
 }

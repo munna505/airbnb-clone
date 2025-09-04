@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Calendar, MapPin, DollarSign, Clock, CheckCircle } from 'lucide-react';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface Booking {
   id: string;
@@ -25,25 +26,15 @@ interface Booking {
   createdAt: string;
 }
 
-export default function OrdersPage() {
-  const { user, loading: authLoading } = useAuth();
+function OrdersPageContent() {
+  const { user } = useAuth();
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Wait for authentication to finish loading before checking user
-    if (authLoading) {
-      return;
-    }
-
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-
     fetchUserOrders();
-  }, [user, authLoading, router]);
+  }, []);
 
   const fetchUserOrders = async () => {
     try {
@@ -84,17 +75,6 @@ export default function OrdersPage() {
     return status === 'COMPLETED' ? 'Completed' : 'Pending';
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -181,5 +161,13 @@ export default function OrdersPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OrdersPage() {
+  return (
+    <ProtectedRoute>
+      <OrdersPageContent />
+    </ProtectedRoute>
   );
 }

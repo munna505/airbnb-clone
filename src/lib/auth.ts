@@ -2,7 +2,6 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from './prisma';
 import bcrypt from 'bcryptjs';
-import { sendLoginEmail } from './email';
 
 // Validate required environment variables
 if (!process.env.NEXTAUTH_SECRET) {
@@ -71,13 +70,6 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          // Send login notification email (non-blocking)
-          try {
-            await sendLoginEmail(user.name, user.email);
-          } catch (error) {
-            console.error('Failed to send login email:', error);
-            // Don't fail authentication if email fails
-          }
 
           return {
             id: user.id,
