@@ -7,6 +7,7 @@ import { sendLoginEmail } from './email';
 // Validate required environment variables
 if (!process.env.NEXTAUTH_SECRET) {
   console.error('NEXTAUTH_SECRET environment variable is not set. This will cause authentication to fail.');
+  throw new Error('NEXTAUTH_SECRET is required');
 }
 
 // Set default NEXTAUTH_URL if not provided
@@ -18,6 +19,7 @@ if (!process.env.NEXTAUTH_URL) {
       process.env.NEXTAUTH_URL = `https://${vercelUrl}`;
     } else {
       console.error('NEXTAUTH_URL not set in production. Please set it to your actual domain.');
+      throw new Error('NEXTAUTH_URL is required in production');
     }
   } else {
     process.env.NEXTAUTH_URL = 'http://localhost:3000';
@@ -48,6 +50,9 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
+          // Test database connection first
+          await prisma.$connect();
+          
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email.toLowerCase().trim()
@@ -82,8 +87,25 @@ export const authOptions: NextAuthOptions = {
           };
         } catch (error) {
           console.error('Auth error:', error);
+          
+          // Handle specific database connection errors
+          if (error instanceof Error) {
+            if (error.message.includes('connect') || error.message.includes('timeout')) {
+              console.error('Database connection error during authentication');
+              // Don't expose database connection issues to users
+              return null;
+            }
+          }
+          
           // Return null instead of throwing to prevent 500 errors
           return null;
+        } finally {
+          // Ensure database connection is closed
+          try {
+            await prisma.$disconnect();
+          } catch (disconnectError) {
+            console.error('Error disconnecting from database:', disconnectError);
+          }
         }
       }
     })
@@ -102,7 +124,12 @@ export const authOptions: NextAuthOptions = {
         return token;
       } catch (error) {
         console.error('JWT callback error:', error);
-        return token;
+        // Return a minimal token to prevent complete failure
+        return {
+          ...token,
+          id: user?.id || token.id,
+          role: user?.role || token.role,
+        };
       }
     },
     async session({ session, token }) {
@@ -114,12 +141,21 @@ export const authOptions: NextAuthOptions = {
         return session;
       } catch (error) {
         console.error('Session callback error:', error);
-        return session;
+        // Return a minimal session to prevent complete failure
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: token?.id as string || session.user.id,
+            role: token?.role as string || session.user.role,
+          },
+        };
       }
     },
   },
   pages: {
     signIn: '/login',
+    error: '/login', // Redirect auth errors back to login page
   },
   debug: process.env.NODE_ENV === 'development',
   events: {
