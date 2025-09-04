@@ -4,24 +4,28 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { Sparkles, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
+  const { addToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     if (!email || !password) {
-      setError('Please fill in all fields');
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please fill in all fields',
+      });
       setLoading(false);
       return;
     }
@@ -29,9 +33,18 @@ export default function LoginPage() {
     const success = await login(email, password);
     
     if (success) {
+      addToast({
+        type: 'success',
+        title: 'Login Successful',
+        message: 'Welcome back!',
+      });
       router.push('/');
     } else {
-      setError('Invalid email or password');
+      addToast({
+        type: 'error',
+        title: 'Login Failed',
+        message: 'Invalid email or password',
+      });
     }
     
     setLoading(false);
@@ -60,11 +73,6 @@ export default function LoginPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-                {error}
-              </div>
-            )}
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">

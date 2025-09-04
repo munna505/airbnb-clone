@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react';
 import Header from '@/components/Header';
+import { useToast } from '@/contexts/ToastContext';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -17,7 +18,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const { addToast } = useToast();
 
   const {
     register,
@@ -30,7 +31,6 @@ export default function ContactPage() {
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
-    setSubmitStatus('idle');
 
     try {
       const response = await fetch('/api/contact', {
@@ -42,13 +42,25 @@ export default function ContactPage() {
       });
 
       if (response.ok) {
-        setSubmitStatus('success');
+        addToast({
+          type: 'success',
+          title: 'Message Sent',
+          message: 'Thank you for your message! We\'ll get back to you soon.',
+        });
         reset();
       } else {
-        setSubmitStatus('error');
+        addToast({
+          type: 'error',
+          title: 'Failed to Send',
+          message: 'There was an error sending your message. Please try again.',
+        });
       }
     } catch {
-      setSubmitStatus('error');
+      addToast({
+        type: 'error',
+        title: 'Network Error',
+        message: 'Unable to send message. Please check your connection and try again.',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -74,18 +86,6 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="card">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
-            
-            {submitStatus === 'success' && (
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-800">Thank you for your message! We&apos;ll get back to you soon.</p>
-              </div>
-            )}
-
-            {submitStatus === 'error' && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800">There was an error sending your message. Please try again.</p>
-              </div>
-            )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div>

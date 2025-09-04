@@ -4,6 +4,27 @@ import { prisma } from './prisma';
 import bcrypt from 'bcryptjs';
 import { sendLoginEmail } from './email';
 
+// Validate required environment variables
+if (!process.env.NEXTAUTH_SECRET) {
+  console.error('NEXTAUTH_SECRET environment variable is not set. This will cause authentication to fail.');
+}
+
+// Set default NEXTAUTH_URL if not provided
+if (!process.env.NEXTAUTH_URL) {
+  if (process.env.NODE_ENV === 'production') {
+    // In production, try to use Vercel's automatically provided URL
+    const vercelUrl = process.env.VERCEL_URL;
+    if (vercelUrl) {
+      process.env.NEXTAUTH_URL = `https://${vercelUrl}`;
+    } else {
+      console.error('NEXTAUTH_URL not set in production. Please set it to your actual domain.');
+    }
+  } else {
+    process.env.NEXTAUTH_URL = 'http://localhost:3000';
+  }
+  console.warn('NEXTAUTH_URL not set, using default:', process.env.NEXTAUTH_URL);
+}
+
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
@@ -15,27 +36,37 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log('Missing credentials');
           return null;
         }
 
         try {
+          // Validate email format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(credentials.email)) {
+            console.log('Invalid email format');
+            return null;
+          }
+
           const user = await prisma.user.findUnique({
             where: {
-              email: credentials.email
+              email: credentials.email.toLowerCase().trim()
             }
           });
 
           if (!user) {
+            console.log('User not found');
             return null;
           }
 
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
 
           if (!isPasswordValid) {
+            console.log('Invalid password');
             return null;
           }
 
-          // Send login notification email
+          // Send login notification email (non-blocking)
           try {
             await sendLoginEmail(user.name, user.email);
           } catch (error) {
@@ -51,6 +82,7 @@ export const authOptions: NextAuthOptions = {
           };
         } catch (error) {
           console.error('Auth error:', error);
+          // Return null instead of throwing to prevent 500 errors
           return null;
         }
       }
@@ -62,21 +94,40 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
+      try {
+        if (user) {
+          token.id = user.id;
+          token.role = user.role;
+        }
+        return token;
+      } catch (error) {
+        console.error('JWT callback error:', error);
+        return token;
       }
-      return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
+      try {
+        if (token) {
+          session.user.id = token.id as string;
+          session.user.role = token.role as string;
+        }
+        return session;
+      } catch (error) {
+        console.error('Session callback error:', error);
+        return session;
       }
-      return session;
     },
   },
   pages: {
     signIn: '/login',
+  },
+  debug: process.env.NODE_ENV === 'development',
+  events: {
+    async signIn({ user, account, profile, isNewUser }) {
+      console.log('User signed in:', user.email);
+    },
+    async signOut({ session, token }) {
+      console.log('User signed out');
+    },
   },
 };

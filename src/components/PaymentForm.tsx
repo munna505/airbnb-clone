@@ -9,6 +9,7 @@ import {
   useElements,
 } from '@stripe/react-stripe-js';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 
 // Load Stripe outside of component to avoid recreating on every render
 const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -49,6 +50,7 @@ function CheckoutForm({
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { addToast } = useToast();
   const [isStripeLoading, setIsStripeLoading] = useState(true);
   const [stripeLoadTimeout, setStripeLoadTimeout] = useState(false);
 
@@ -75,9 +77,13 @@ function CheckoutForm({
 
     if (!stripe || !elements) {
       console.log('❌ Stripe not ready');
-      setError(
-        'Payment system is not ready. Please refresh the page and try again.'
-      );
+      const errorMessage = 'Payment system is not ready. Please refresh the page and try again.';
+      setError(errorMessage);
+      addToast({
+        type: 'error',
+        title: 'Payment System Error',
+        message: errorMessage,
+      });
       return;
     }
 
@@ -136,8 +142,14 @@ function CheckoutForm({
         });
       console.log('🔵 Payment intent:', paymentIntent);
       if (stripeError) {
-        setError(stripeError.message || 'Payment failed');
-        onPaymentError(stripeError.message || 'Payment failed');
+        const errorMessage = stripeError.message || 'Payment failed';
+        setError(errorMessage);
+        addToast({
+          type: 'error',
+          title: 'Payment Failed',
+          message: errorMessage,
+        });
+        onPaymentError(errorMessage);
       } else if (paymentIntent?.status === 'succeeded') {
         console.log(paymentIntent);
         if (bookingId) {
@@ -159,23 +171,46 @@ function CheckoutForm({
               onPaymentSuccess(paymentIntent.id, bookingId);
             } else {
               console.error('❌ Failed to confirm booking');
-              setError('Payment succeeded but booking confirmation failed');
-              onPaymentError('Payment succeeded but booking confirmation failed');
+              const errorMessage = 'Payment succeeded but booking confirmation failed';
+              setError(errorMessage);
+              addToast({
+                type: 'error',
+                title: 'Booking Confirmation Failed',
+                message: errorMessage,
+              });
+              onPaymentError(errorMessage);
             }
           } catch (confirmError) {
             console.error('❌ Error confirming booking:', confirmError);
-            setError('Payment succeeded but booking confirmation failed');
-            onPaymentError('Payment succeeded but booking confirmation failed');
+            const errorMessage = 'Payment succeeded but booking confirmation failed';
+            setError(errorMessage);
+            addToast({
+              type: 'error',
+              title: 'Booking Confirmation Failed',
+              message: errorMessage,
+            });
+            onPaymentError(errorMessage);
           }
         } else {
-          setError('Payment succeeded but booking ID not found');
-          onPaymentError('Payment succeeded but booking ID not found');
+          const errorMessage = 'Payment succeeded but booking ID not found';
+          setError(errorMessage);
+          addToast({
+            type: 'error',
+            title: 'Booking Error',
+            message: errorMessage,
+          });
+          onPaymentError(errorMessage);
         }
       }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'Payment failed';
       setError(errorMessage);
+      addToast({
+        type: 'error',
+        title: 'Payment Error',
+        message: errorMessage,
+      });
       onPaymentError(errorMessage);
     } finally {
       setIsProcessing(false);

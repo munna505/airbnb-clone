@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { Sparkles, Eye, EyeOff } from 'lucide-react';
 
 export default function RegisterPage() {
@@ -16,10 +17,10 @@ export default function RegisterPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { register } = useAuth();
+  const { addToast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -30,21 +31,32 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
 
     // Validation
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      setError('Please fill in all required fields');
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        message: 'Please fill in all required fields',
+      });
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      addToast({
+        type: 'error',
+        title: 'Password Mismatch',
+        message: 'Passwords do not match',
+      });
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      addToast({
+        type: 'error',
+        title: 'Password Too Short',
+        message: 'Password must be at least 6 characters long',
+      });
       return;
     }
 
@@ -58,9 +70,18 @@ export default function RegisterPage() {
     );
     
     if (success) {
+      addToast({
+        type: 'success',
+        title: 'Registration Successful',
+        message: 'Welcome to CleanPro!',
+      });
       router.push('/');
     } else {
-      setError('Registration failed. Please try again.');
+      addToast({
+        type: 'error',
+        title: 'Registration Failed',
+        message: 'Registration failed. Please try again.',
+      });
     }
     
     setLoading(false);
@@ -89,11 +110,6 @@ export default function RegisterPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-                {error}
-              </div>
-            )}
 
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">

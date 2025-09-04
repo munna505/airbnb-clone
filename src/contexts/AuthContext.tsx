@@ -29,11 +29,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
+      // Validate input
+      if (!email || !password) {
+        console.error('Missing email or password');
+        return false;
+      }
+
       const result = await signIn('credentials', {
-        email,
+        email: email.trim().toLowerCase(),
         password,
         redirect: false,
       });
+
+      if (result?.error) {
+        console.error('Sign in error:', result.error);
+        return false;
+      }
 
       return result?.ok || false;
     } catch (error) {
@@ -48,20 +59,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (name: string, email: string, password: string, phone?: string): Promise<boolean> => {
     try {
+      // Validate input
+      if (!name || !email || !password) {
+        console.error('Missing required fields for registration');
+        return false;
+      }
+
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password, phone }),
+        body: JSON.stringify({ 
+          name: name.trim(), 
+          email: email.trim().toLowerCase(), 
+          password, 
+          phone: phone?.trim() 
+        }),
       });
 
       if (response.ok) {
         // Auto-login after successful registration
         return await login(email, password);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Registration failed:', errorData.error || 'Unknown error');
+        return false;
       }
-
-      return false;
     } catch (error) {
       console.error('Registration error:', error);
       return false;
