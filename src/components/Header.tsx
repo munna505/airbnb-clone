@@ -16,11 +16,18 @@ export default function Header({ variant = 'default', title, showLogo = true }: 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      // Handle user dropdown
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowDropdown(false);
+      }
+      
+      // Handle mobile menu
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setShowMobileMenu(false);
       }
     }
 
@@ -74,24 +81,10 @@ export default function Header({ variant = 'default', title, showLogo = true }: 
 
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex items-center space-x-8">
-                <Link 
-                  href="/services" 
-                  className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group"
-                >
-                  Services
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
-                </Link>
-                <Link 
-                  href="/contact" 
-                  className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group"
-                >
-                  Contact
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
-                </Link>
               </nav>
               
-              {/* Authentication Section */}
-              <div className="flex items-center space-x-4">
+              {/* Authentication Section - Hidden on mobile */}
+              <div className="hidden lg:flex items-center space-x-4">
                 {user ? (
                   <div className="relative" ref={dropdownRef}>
                     <button
@@ -144,37 +137,65 @@ export default function Header({ variant = 'default', title, showLogo = true }: 
                     Sign In
                   </Link>
                 )}
-
-                {/* Mobile Menu Button */}
-                <button
-                  onClick={() => setShowMobileMenu(!showMobileMenu)}
-                  className="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  {showMobileMenu ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                </button>
               </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                {showMobileMenu ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
             </>
           )}
         </div>
 
         {/* Mobile Navigation Menu */}
         {variant === 'default' && showMobileMenu && (
-          <div className="lg:hidden border-t border-gray-100 py-4">
-            <nav className="flex flex-col space-y-4">
-              <Link 
-                href="/services" 
-                className="text-gray-600 hover:text-blue-600 transition-colors font-medium py-2"
-                onClick={() => setShowMobileMenu(false)}
-              >
-                Services
-              </Link>
-              <Link 
-                href="/contact" 
-                className="text-gray-600 hover:text-blue-600 transition-colors font-medium py-2"
-                onClick={() => setShowMobileMenu(false)}
-              >
-                Contact
-              </Link>
+          <div ref={mobileMenuRef} className="lg:hidden absolute top-full right-0 w-2/3 bg-white/95 backdrop-blur-sm border border-gray-200/50 shadow-2xl z-40 rounded-xl m-2">
+            <nav className="flex flex-col p-6">
+              {/* Account Section */}
+              <div>
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 px-2">Account</h3>
+                {user ? (
+                  <div className="space-y-1">
+                    <Link
+                      href="/profile"
+                      className="flex items-center text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 font-medium py-3 px-4 rounded-lg group"
+                      onClick={() => setShowMobileMenu(false)}
+                    >
+                      <User className="h-4 w-4 mr-3 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                      My Profile
+                    </Link>
+                    <Link
+                      href="/orders"
+                      className="flex items-center text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 font-medium py-3 px-4 rounded-lg group"
+                      onClick={() => setShowMobileMenu(false)}
+                    >
+                      <Package className="h-4 w-4 mr-3 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                      My Orders
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setShowMobileMenu(false);
+                      }}
+                      className="flex items-center w-full text-white bg-red-500 hover:bg-red-600 transition-all duration-200 font-medium py-3 px-4 rounded-lg shadow-sm hover:shadow-md"
+                    >
+                      <LogOut className="h-4 w-4 mr-3" />
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="block bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 text-sm font-semibold text-center shadow-lg hover:shadow-xl"
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    Sign In
+                  </Link>
+                )}
+              </div>
             </nav>
           </div>
         )}

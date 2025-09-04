@@ -42,7 +42,6 @@ export default withAuth(
           '/login',
           '/register',
           '/contact',
-          '/services',
           '/book',
           '/confirmation',
           '/admin/login',
