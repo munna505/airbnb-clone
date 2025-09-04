@@ -55,8 +55,8 @@ export default function LoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="flex items-center space-x-2">
-            <Sparkles className="h-10 w-10 text-blue-600" />
-            <span className="text-3xl font-bold text-gray-900">WelcomeFresh</span>
+            <Sparkles className="h-10 w-10 text-green-600" />
+            <span className="text-3xl font-bold bg-gradient-to-r from-green-700 to-green-400 bg-clip-text text-transparent">WelcomeFresh</span>
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
