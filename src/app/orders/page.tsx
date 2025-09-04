@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Calendar, MapPin, DollarSign, Clock, CheckCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Calendar, MapPin, DollarSign, Clock, CheckCircle } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import Header from '@/components/Header';
 
 interface Booking {
   id: string;
@@ -27,7 +28,6 @@ interface Booking {
 }
 
 function OrdersPageContent() {
-  const { user } = useAuth();
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,15 +78,9 @@ function OrdersPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-2 mb-4">
-            <Sparkles className="h-8 w-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">CleanPro</span>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-        </div>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">My Orders</h1>
 
         {/* Orders Section */}
         <div className="bg-white rounded-lg shadow">
@@ -114,13 +108,16 @@ function OrdersPageContent() {
           ) : (
             <div className="divide-y divide-gray-200">
               {bookings.map((booking) => (
-                <div key={booking.id} className="p-6">
+                <div key={booking.id} className="p-6 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="text-lg font-medium text-gray-900">
+                        <Link 
+                          href={`/confirmation?bookingId=${booking.id}`}
+                          className="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                        >
                           {booking.serviceType === 'HOME' ? 'Home Cleaning' : 'Airbnb Cleaning'}
-                        </h3>
+                        </Link>
                         {getStatusIcon(booking.paymentStatus)}
                         <span className={`text-sm font-medium ${
                           booking.paymentStatus === 'COMPLETED' ? 'text-green-600' : 'text-yellow-600'

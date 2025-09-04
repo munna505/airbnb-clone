@@ -56,7 +56,7 @@ async function sendContactEmail({ name, email, message }: { name: string; email:
   // await sendGrid.send({
   //   to: 'admin@cleanpro.com',
   //   from: 'noreply@cleanpro.com',
-  //   subject: 'New Contact Form Submission - CleanPro',
+  //   subject: 'New Contact Form Submission - WelcomeFresh',
   //   text: `
   //     Name: ${name}
   //     Email: ${email}

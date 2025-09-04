@@ -79,16 +79,57 @@ function PaymentPageContent() {
         </div>
 
         <div className="card">
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <h3 className="font-semibold text-gray-900 mb-2">Booking Summary</h3>
-            <div className="space-y-1 text-sm text-gray-600">
-              <div>Service: {bookingData?.serviceType === 'home' ? 'Home Cleaning' : 'Airbnb Cleaning'}</div>
-              <div>Bedrooms: {bookingData?.bedrooms}</div>
-              <div>Bathrooms: {bookingData?.bathrooms}</div>
-              <div>Living Areas: {bookingData?.livingAreas}</div>
-              <div>Date: {bookingData?.date}</div>
-              <div>Time: {bookingData?.time}</div>
-              <div className="font-semibold text-gray-900 mt-2">Total: ${bookingData?.price}</div>
+          <div className="mb-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Booking Summary</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-100">
+                  <span className="text-sm font-medium text-gray-600">Service</span>
+                  <span className="text-sm font-semibold text-gray-900">{bookingData?.serviceType === 'home' ? 'Home Cleaning' : 'Airbnb Cleaning'}</span>
+                </div>
+                
+                <div className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-100">
+                  <span className="text-sm font-medium text-gray-600">Bedrooms</span>
+                  <span className="text-sm font-semibold text-gray-900">{bookingData?.bedrooms}</span>
+                </div>
+                
+                <div className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-100">
+                  <span className="text-sm font-medium text-gray-600">Bathrooms</span>
+                  <span className="text-sm font-semibold text-gray-900">{bookingData?.bathrooms}</span>
+                </div>
+                
+                <div className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-100">
+                  <span className="text-sm font-medium text-gray-600">Living Areas</span>
+                  <span className="text-sm font-semibold text-gray-900">{bookingData?.livingAreas}</span>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-100">
+                  <span className="text-sm font-medium text-gray-600">Date</span>
+                  <span className="text-sm font-semibold text-gray-900">{bookingData?.date}</span>
+                </div>
+                
+                <div className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-100">
+                  <span className="text-sm font-medium text-gray-600">Time</span>
+                  <span className="text-sm font-semibold text-gray-900">{bookingData?.time}</span>
+                </div>
+                
+                <div className="mt-4 p-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white font-semibold">Total</span>
+                    <span className="text-2xl font-bold text-white">${bookingData?.price}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         {

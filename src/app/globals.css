@@ -22,7 +22,11 @@
   }
   
   .input-field {
-    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 font-medium placeholder-gray-500 bg-white shadow-sm hover:border-gray-400;
+  }
+  
+  .input-field-number {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 font-semibold text-center bg-white shadow-sm hover:border-gray-400 hover:shadow-md;
   }
   
   .card {

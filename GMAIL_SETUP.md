@@ -1,6 +1,6 @@
 # Gmail SMTP Setup Guide
 
-This guide will help you configure Gmail SMTP for sending email notifications in your CleanPro application.
+This guide will help you configure Gmail SMTP for sending email notifications in your WelcomeFresh application.
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ This guide will help you configure Gmail SMTP for sending email notifications in
 4. **Click "App passwords"**
 5. **Select "Mail"** as the app
 6. **Select "Other (Custom name)"** as the device
-7. **Enter a name** like "CleanPro App"
+7. **Enter a name** like "WelcomeFresh App"
 8. **Click "Generate"**
 9. **Copy the 16-character password** (it will look like: `abcd efgh ijkl mnop`)
    **Important**: Remove all spaces when adding to your .env file

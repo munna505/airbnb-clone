@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
-import { Sparkles, ArrowLeft, CheckCircle, User, LogOut, Package, ChevronDown } from 'lucide-react';
+import { Sparkles, ArrowLeft, CheckCircle, User, LogOut, Package, ChevronDown, Menu, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface HeaderProps {
@@ -14,6 +14,7 @@ interface HeaderProps {
 export default function Header({ variant = 'default', title, showLogo = true }: HeaderProps) {
   const { user, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export default function Header({ variant = 'default', title, showLogo = true }: 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between py-6">
+        <div className="flex items-center justify-between py-4">
           {variant === 'back' ? (
             <>
               <Link href="/" className="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
@@ -47,31 +48,45 @@ export default function Header({ variant = 'default', title, showLogo = true }: 
             </>
           ) : variant === 'confirmation' ? (
             <>
-              <div className="flex items-center space-x-2">
+              <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
                 <CheckCircle className="h-8 w-8 text-green-600" />
-                <span className="text-2xl font-bold text-gray-900">CleanPro</span>
-              </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-green-700 to-green-400 bg-clip-text text-transparent">WelcomeFresh</span>
+              </Link>
               <Link href="/" className="text-blue-600 hover:text-blue-700 font-medium">
                 Back to Home
               </Link>
             </>
           ) : (
             <>
-              {showLogo && (
-                <div className="flex items-center space-x-2">
-                  <Sparkles className="h-8 w-8 text-blue-600" />
-                  <span className="text-2xl font-bold text-gray-900">CleanPro</span>
-                </div>
-              )}
-              {title && (
-                <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-              )}
-              <nav className="hidden md:flex space-x-8">
-                <Link href="/services" className="text-gray-600 hover:text-gray-900 transition-colors">
+              {/* Logo Section */}
+              <div className="flex items-center">
+                {showLogo && (
+                  <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                    <Sparkles className="h-8 w-8 text-green-600" />
+                    <span className="text-2xl font-bold bg-gradient-to-r from-green-700 to-green-400 bg-clip-text text-transparent">WelcomeFresh</span>
+                    
+                  </Link>
+                )}
+                {title && (
+                  <h1 className="text-xl font-semibold text-gray-900 ml-8">{title}</h1>
+                )}
+              </div>
+
+              {/* Desktop Navigation */}
+              <nav className="hidden lg:flex items-center space-x-8">
+                <Link 
+                  href="/services" 
+                  className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group"
+                >
                   Services
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
                 </Link>
-                <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition-colors">
+                <Link 
+                  href="/contact" 
+                  className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group"
+                >
                   Contact
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
                 </Link>
               </nav>
               
@@ -129,10 +144,40 @@ export default function Header({ variant = 'default', title, showLogo = true }: 
                     Sign In
                   </Link>
                 )}
+
+                {/* Mobile Menu Button */}
+                <button
+                  onClick={() => setShowMobileMenu(!showMobileMenu)}
+                  className="lg:hidden p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  {showMobileMenu ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </button>
               </div>
             </>
           )}
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {variant === 'default' && showMobileMenu && (
+          <div className="lg:hidden border-t border-gray-100 py-4">
+            <nav className="flex flex-col space-y-4">
+              <Link 
+                href="/services" 
+                className="text-gray-600 hover:text-blue-600 transition-colors font-medium py-2"
+                onClick={() => setShowMobileMenu(false)}
+              >
+                Services
+              </Link>
+              <Link 
+                href="/contact" 
+                className="text-gray-600 hover:text-blue-600 transition-colors font-medium py-2"
+                onClick={() => setShowMobileMenu(false)}
+              >
+                Contact
+              </Link>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );

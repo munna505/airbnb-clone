@@ -14,11 +14,11 @@ const createTransporter = () => {
 // Email templates
 const emailTemplates = {
   welcome: (name: string) => ({
-    subject: 'Welcome to CleanPro - Your Account is Ready!',
+    subject: 'Welcome to WelcomeFresh - Your Account is Ready!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-          <h1 style="margin: 0; font-size: 28px;">Welcome to CleanPro! 🧹</h1>
+          <h1 style="margin: 0; font-size: 28px;">Welcome to WelcomeFresh! 🧹</h1>
           <p style="margin: 10px 0 0 0; font-size: 16px;">Professional Cleaning Services</p>
         </div>
         
@@ -26,7 +26,7 @@ const emailTemplates = {
           <h2 style="color: #333; margin-top: 0;">Hi ${name},</h2>
           
           <p style="color: #666; line-height: 1.6;">
-            Thank you for creating your account with CleanPro! We're excited to have you on board and ready to help keep your space spotless.
+            Thank you for creating your account with WelcomeFresh! We're excited to have you on board and ready to help keep your space spotless.
           </p>
           
           <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea;">
@@ -53,21 +53,21 @@ const emailTemplates = {
           
           <p style="color: #666; line-height: 1.6;">
             Best regards,<br>
-            The CleanPro Team
+            The WelcomeFresh Team
           </p>
         </div>
         
         <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-          <p>© 2024 CleanPro. All rights reserved.</p>
+          <p>© 2024 WelcomeFresh. All rights reserved.</p>
         </div>
       </div>
     `,
     text: `
-Welcome to CleanPro! 🧹
+Welcome to WelcomeFresh! 🧹
 
 Hi ${name},
 
-Thank you for creating your account with CleanPro! We're excited to have you on board and ready to help keep your space spotless.
+Thank you for creating your account with WelcomeFresh! We're excited to have you on board and ready to help keep your space spotless.
 
 What you can do now:
 - 📅 Book home cleaning services
@@ -81,26 +81,26 @@ Start booking now: ${process.env.NEXTAUTH_URL || 'http://localhost:3000'}
 If you have any questions or need assistance, don't hesitate to contact our support team.
 
 Best regards,
-The CleanPro Team
+The WelcomeFresh Team
 
-© 2024 CleanPro. All rights reserved.
+© 2024 WelcomeFresh. All rights reserved.
     `
   }),
 
   login: (name: string, email: string, timestamp: string) => ({
-    subject: 'New Login to Your CleanPro Account',
+    subject: 'New Login to Your WelcomeFresh Account',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
           <h1 style="margin: 0; font-size: 28px;">🔐 Account Login Alert</h1>
-          <p style="margin: 10px 0 0 0; font-size: 16px;">CleanPro Security Notification</p>
+          <p style="margin: 10px 0 0 0; font-size: 16px;">WelcomeFresh Security Notification</p>
         </div>
         
         <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
           <h2 style="color: #333; margin-top: 0;">Hi ${name},</h2>
           
           <p style="color: #666; line-height: 1.6;">
-            We detected a new login to your CleanPro account. Here are the details:
+            We detected a new login to your WelcomeFresh account. Here are the details:
           </p>
           
           <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745;">
@@ -132,12 +132,12 @@ The CleanPro Team
           
           <p style="color: #666; line-height: 1.6;">
             Best regards,<br>
-            The CleanPro Security Team
+            The WelcomeFresh Security Team
           </p>
         </div>
         
         <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-          <p>© 2024 CleanPro. All rights reserved.</p>
+          <p>© 2024 WelcomeFresh. All rights reserved.</p>
         </div>
       </div>
     `,
@@ -146,7 +146,7 @@ The CleanPro Team
 
 Hi ${name},
 
-We detected a new login to your CleanPro account. Here are the details:
+We detected a new login to your WelcomeFresh account. Here are the details:
 
 Login Details:
 - Email: ${email}
@@ -163,19 +163,19 @@ For security reasons, we recommend:
 - Never sharing your login credentials
 
 Best regards,
-The CleanPro Security Team
+The WelcomeFresh Security Team
 
-© 2024 CleanPro. All rights reserved.
+© 2024 WelcomeFresh. All rights reserved.
     `
   }),
 
   paymentComplete: (name: string, bookingDetails: Record<string, unknown>) => ({
-    subject: 'Payment Confirmed - Your CleanPro Booking is Confirmed!',
+    subject: 'Payment Confirmed - Your WelcomeFresh Booking is Confirmed!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
           <h1 style="margin: 0; font-size: 28px;">✅ Payment Confirmed!</h1>
-          <p style="margin: 10px 0 0 0; font-size: 16px;">Your CleanPro booking is now confirmed</p>
+          <p style="margin: 10px 0 0 0; font-size: 16px;">Your WelcomeFresh booking is now confirmed</p>
         </div>
         
         <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
@@ -205,9 +205,9 @@ The CleanPro Security Team
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/orders" 
+            <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/confirmation?bookingId=${bookingDetails.id}" 
                style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: bold;">
-              View My Bookings
+              View My Booking
             </a>
           </div>
           
@@ -216,17 +216,17 @@ The CleanPro Security Team
           </p>
           
           <p style="color: #666; line-height: 1.6;">
-            Thank you for choosing CleanPro! We look forward to serving you.
+            Thank you for choosing WelcomeFresh! We look forward to serving you.
           </p>
           
           <p style="color: #666; line-height: 1.6;">
             Best regards,<br>
-            The CleanPro Team
+            The WelcomeFresh Team
           </p>
         </div>
         
         <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-          <p>© 2024 CleanPro. All rights reserved.</p>
+          <p>© 2024 WelcomeFresh. All rights reserved.</p>
         </div>
       </div>
     `,
@@ -250,16 +250,16 @@ What's Next?
 - Please ensure someone is available at the address during the scheduled time
 - You'll receive a reminder email the day before your service
 
-View your bookings: ${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/orders
+View your booking: ${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/confirmation?bookingId=${bookingDetails.id}
 
 If you have any questions or need to make changes to your booking, please contact us as soon as possible.
 
-Thank you for choosing CleanPro! We look forward to serving you.
+Thank you for choosing WelcomeFresh! We look forward to serving you.
 
 Best regards,
-The CleanPro Team
+The WelcomeFresh Team
 
-© 2024 CleanPro. All rights reserved.
+© 2024 WelcomeFresh. All rights reserved.
     `
   })
 };
@@ -295,7 +295,7 @@ export const sendEmail = async (to: string, template: keyof typeof emailTemplate
     }
     
     const mailOptions = {
-      from: `"CleanPro" <${process.env.GMAIL_USER}>`,
+      from: `"WelcomeFresh" <${process.env.GMAIL_USER}>`,
       to,
       subject: emailTemplate.subject,
       html: emailTemplate.html,

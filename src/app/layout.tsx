@@ -6,7 +6,7 @@ import Providers from '@/components/Providers';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CleanPro - Professional Cleaning Services",
+  title: "WelcomeFresh - Professional Cleaning Services",
   description: "Book professional home and Airbnb cleaning services with ease. Fast, reliable, and affordable cleaning solutions.",
 };
 

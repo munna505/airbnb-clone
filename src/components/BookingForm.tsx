@@ -189,7 +189,7 @@ export default function BookingForm({ serviceType, onStepChange }: BookingFormPr
                   type="number"
                   min="1"
                   {...register('bedrooms', { valueAsNumber: true })}
-                  className="input-field"
+                  className="input-field-number"
                 />
                 {errors.bedrooms && (
                   <p className="text-red-500 text-sm mt-1">{errors.bedrooms.message}</p>
@@ -204,7 +204,7 @@ export default function BookingForm({ serviceType, onStepChange }: BookingFormPr
                   type="number"
                   min="1"
                   {...register('bathrooms', { valueAsNumber: true })}
-                  className="input-field"
+                  className="input-field-number"
                 />
                 {errors.bathrooms && (
                   <p className="text-red-500 text-sm mt-1">{errors.bathrooms.message}</p>
@@ -219,7 +219,7 @@ export default function BookingForm({ serviceType, onStepChange }: BookingFormPr
                   type="number"
                   min="0"
                   {...register('livingAreas', { valueAsNumber: true })}
-                  className="input-field"
+                  className="input-field-number"
                 />
                 {errors.livingAreas && (
                   <p className="text-red-500 text-sm mt-1">{errors.livingAreas.message}</p>
@@ -314,7 +314,7 @@ export default function BookingForm({ serviceType, onStepChange }: BookingFormPr
                   Address
                 </label>
                 <div className="relative">
-w                  <MapPin className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                  <MapPin className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
                   <textarea
                     {...register('address')}
                     className="input-field pl-10"

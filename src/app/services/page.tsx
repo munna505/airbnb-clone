@@ -165,7 +165,7 @@ export default function ServicesPage() {
         {/* Features Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
-            Why Choose CleanPro?
+            Why Choose WelcomeFresh?
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">

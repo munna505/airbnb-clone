@@ -1,4 +1,4 @@
-# CleanPro - Professional Cleaning Service Booking App
+# WelcomeFresh - Professional Cleaning Service Booking App
 
 A modern, responsive web application for booking professional cleaning services. Built with Next.js, TypeScript, and Tailwind CSS.
 

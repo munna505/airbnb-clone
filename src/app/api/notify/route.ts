@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       console.log('Sending confirmation email...');
       // await sendEmail({
       //   to: booking.customerEmail,
-      //   subject: 'Booking Confirmation - CleanPro',
+      //   subject: 'Booking Confirmation - WelcomeFresh',
       //   template: 'confirmation',
       //   data: booking
       // });
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     console.log('Sending confirmation SMS...');
     // await sendSMS({
     //   to: booking.customerPhone,
-    //   message: `Your CleanPro booking (${bookingId}) has been confirmed. We'll see you soon!`
+    //   message: `Your WelcomeFresh booking (${bookingId}) has been confirmed. We'll see you soon!`
     // });
 
     return NextResponse.json({

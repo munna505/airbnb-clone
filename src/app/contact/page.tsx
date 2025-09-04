@@ -68,7 +68,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header variant="back" />
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -173,7 +173,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                    <p className="text-gray-600">info@cleanpro.com</p>
+                    <p className="text-gray-600">info@welcomefresh.com</p>
                     <p className="text-sm text-gray-500">We&apos;ll respond within 24 hours</p>
                   </div>
                 </div>

@@ -12,6 +12,7 @@ import {
   User,
 } from 'lucide-react';
 import Header from '@/components/Header';
+import { findBooking } from '@/lib/data';
 
 interface BookingData {
   id: string;
@@ -36,37 +37,16 @@ interface BookingData {
 
 async function getBookingData(bookingId: string): Promise<BookingData | null> {
   try {
-    // For server-side fetching in Next.js, use relative URL or construct proper URL
-    let url: string;
+    console.log('🔵 Fetching booking directly from database for ID:', bookingId);
     
-    if (process.env.VERCEL_URL) {
-      // On Vercel, use the VERCEL_URL environment variable
-      url = `https://${process.env.VERCEL_URL}/api/bookings/${bookingId}`;
-    } else if (process.env.NEXT_PUBLIC_BASE_URL) {
-      // Use the configured base URL
-      url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/bookings/${bookingId}`;
+    // Use direct database call instead of HTTP request
+    const booking = await findBooking(bookingId);
+    
+    if (booking) {
+      console.log('🔵 Booking found:', booking);
+      return booking;
     } else {
-      // Fallback to relative URL for local development
-      url = `/api/bookings/${bookingId}`;
-    }
-    
-    console.log('🔵 Fetching booking from URL:', url);
-    
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      // Add cache: 'no-store' to ensure fresh data
-      cache: 'no-store',
-    });
-
-    if (response.ok) {
-      const bookingData = await response.json();
-      return bookingData;
-    } else {
-      console.error('Failed to fetch booking:', response.status);
+      console.log('🔴 Booking not found for ID:', bookingId);
       return null;
     }
   } catch (error) {
@@ -93,8 +73,9 @@ async function sendConfirmationNotification(bookingId: string) {
       // Use the configured base URL
       url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/notify`;
     } else {
-      // Fallback to relative URL for local development
-      url = `/api/notify`;
+      // For local development, use localhost:3001 (or the port from PORT env var)
+      const port = process.env.PORT || '3001';
+      url = `http://localhost:${port}/api/notify`;
     }
     
     console.log('🔵 Sending notification to URL:', url);

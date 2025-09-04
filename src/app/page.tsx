@@ -95,7 +95,7 @@ export default function Home() {
 
         {/* Features Section */}
         <div className="mt-20 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12">Why Choose CleanPro?</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-12">Why Choose WelcomeFresh?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -127,14 +127,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <Sparkles className="h-6 w-6 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">CleanPro</span>
+              <Sparkles className="h-6 w-6 text-green-600" />
+              <span className="text-xl font-bold bg-gradient-to-r from-green-700 to-green-400 bg-clip-text text-transparent">WelcomeFresh</span>
             </div>
             <p className="text-gray-600 mb-4">Professional cleaning services for homes and Airbnb properties</p>
             <div className="flex justify-center space-x-6 text-sm text-gray-500">
               <Link href="/services" className="hover:text-gray-900">Services</Link>
               <Link href="/contact" className="hover:text-gray-900">Contact</Link>
-              <span>© 2024 CleanPro. All rights reserved.</span>
+              <span>© 2024 WelcomeFresh. All rights reserved.</span>
             </div>
           </div>
         </div>
