@@ -93,7 +93,9 @@ function PaymentPageContent() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-100">
                   <span className="text-sm font-medium text-gray-600">Service</span>
-                  <span className="text-sm font-semibold text-gray-900">{bookingData?.serviceType === 'home' ? 'Home Cleaning' : 'Airbnb Cleaning'}</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    {bookingData?.serviceType ? (bookingData.serviceType === 'home' ? 'Home Cleaning' : 'Airbnb Cleaning') : ''}
+                  </span>
                 </div>
                 
                 <div className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-100">

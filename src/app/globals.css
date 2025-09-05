@@ -25,12 +25,190 @@
     @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 font-medium placeholder-gray-500 bg-white shadow-sm hover:border-gray-400;
   }
   
+  /* Force hide all default date input text when empty - desktop only */
+  @media (min-width: 769px) {
+    .input-field[type="date"]:not([value]):not(:focus) {
+      color: transparent !important;
+    }
+    
+    .input-field[type="date"]:not([value]):not(:focus)::-webkit-datetime-edit {
+      color: transparent !important;
+    }
+    
+    .input-field[type="date"]:not([value]):not(:focus)::-webkit-datetime-edit-text {
+      color: transparent !important;
+    }
+    
+    .input-field[type="date"]:not([value]):not(:focus)::-webkit-datetime-edit-month-field,
+    .input-field[type="date"]:not([value]):not(:focus)::-webkit-datetime-edit-day-field,
+    .input-field[type="date"]:not([value]):not(:focus)::-webkit-datetime-edit-year-field {
+      color: transparent !important;
+    }
+  }
+  
   .input-field-number {
     @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 font-semibold text-center bg-white shadow-sm hover:border-gray-400 hover:shadow-md;
+  }
+
+  /* Style select option elements */
+  .input-field option {
+    color: #374151;
+    background-color: white;
+  }
+  
+  .input-field option:first-child {
+    color: #6b7280 !important;
+    font-style: italic;
+  }
+
+  /* Custom dropdown button styling */
+  .time-dropdown-container button,
+  .date-picker-container button {
+    color: #374151;
+  }
+  
+  .time-dropdown-container button:not([data-selected="true"]),
+  .date-picker-container button:not([data-selected="true"]) {
+    color: #6b7280;
+  }
+
+  /* Mobile-specific select styling to prevent text overlap with icons */
+  @media (max-width: 768px) {
+    .input-field[type="date"],
+    .input-field select {
+      padding-left: 2.75rem !important;
+    }
+    
+    /* Mobile date input formatting */
+    .input-field[type="date"] {
+      color-scheme: light;
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+      text-align: left !important;
+    }
+    
+    /* Hide default date input styling when empty on mobile */
+    .input-field[type="date"]:invalid {
+      color: transparent !important;
+    }
+    
+    .input-field[type="date"]:valid {
+      color: #374151 !important;
+    }
+    
+    /* iOS Safari date input styling - only hide when empty */
+    .input-field[type="date"]:invalid::-webkit-datetime-edit {
+      color: transparent !important;
+      font-weight: 500;
+      text-align: left !important;
+    }
+    
+    .input-field[type="date"]:valid::-webkit-datetime-edit {
+      color: #374151 !important;
+      font-weight: 500;
+      text-align: left !important;
+    }
+    
+    .input-field[type="date"]::-webkit-datetime-edit-fields-wrapper {
+      background: transparent;
+    }
+    
+    .input-field[type="date"]:invalid::-webkit-datetime-edit-text {
+      color: transparent !important;
+      padding: 0 2px;
+    }
+    
+    .input-field[type="date"]:valid::-webkit-datetime-edit-text {
+      color: #6b7280 !important;
+      padding: 0 2px;
+    }
+    
+    .input-field[type="date"]:invalid::-webkit-datetime-edit-month-field,
+    .input-field[type="date"]:invalid::-webkit-datetime-edit-day-field,
+    .input-field[type="date"]:invalid::-webkit-datetime-edit-year-field {
+      color: transparent !important;
+      font-weight: 500;
+    }
+    
+    .input-field[type="date"]:valid::-webkit-datetime-edit-month-field,
+    .input-field[type="date"]:valid::-webkit-datetime-edit-day-field,
+    .input-field[type="date"]:valid::-webkit-datetime-edit-year-field {
+      color: #374151 !important;
+      font-weight: 500;
+    }
+    
+    /* Android Chrome date input styling */
+    .input-field[type="date"]::-webkit-calendar-picker-indicator {
+      background: transparent;
+      color: transparent;
+      cursor: pointer;
+      height: 100%;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 100%;
+    }
   }
   
   .card {
     @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+  }
+
+  /* Desktop date input styling - completely hide default text when empty */
+  @media (min-width: 769px) {
+    .input-field[type="date"]:invalid {
+      color: transparent !important;
+    }
+    
+    .input-field[type="date"]:valid {
+      color: #374151 !important;
+    }
+    
+    /* Hide all default date input styling when empty on desktop */
+    .input-field[type="date"]:invalid::-webkit-datetime-edit {
+      color: transparent !important;
+    }
+    
+    .input-field[type="date"]:valid::-webkit-datetime-edit {
+      color: #374151 !important;
+    }
+    
+    .input-field[type="date"]:invalid::-webkit-datetime-edit-text {
+      color: transparent !important;
+    }
+    
+    .input-field[type="date"]:valid::-webkit-datetime-edit-text {
+      color: #6b7280 !important;
+    }
+    
+    .input-field[type="date"]:invalid::-webkit-datetime-edit-month-field,
+    .input-field[type="date"]:invalid::-webkit-datetime-edit-day-field,
+    .input-field[type="date"]:invalid::-webkit-datetime-edit-year-field {
+      color: transparent !important;
+    }
+    
+    .input-field[type="date"]:valid::-webkit-datetime-edit-month-field,
+    .input-field[type="date"]:valid::-webkit-datetime-edit-day-field,
+    .input-field[type="date"]:valid::-webkit-datetime-edit-year-field {
+      color: #374151 !important;
+    }
+  }
+  
+  /* Firefox date input styling */
+  .input-field[type="date"]::-moz-placeholder {
+    color: transparent !important;
+  }
+  
+  .input-field[type="date"]::-webkit-input-placeholder {
+    color: transparent !important;
+  }
+  
+  .input-field[type="date"]::-ms-input-placeholder {
+    color: transparent !important;
+  }
+  
+  .input-field[type="date"]::placeholder {
+    color: transparent !important;
   }
 
   /* Progress line animations */
