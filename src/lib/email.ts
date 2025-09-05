@@ -205,7 +205,7 @@ The WelcomeFresh Security Team
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/confirmation?bookingId=${bookingDetails.id}" 
+            <a href="https://welcomefresh.vercel.app/confirmation?bookingId=${bookingDetails.id}" 
                style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: bold;">
               View My Booking
             </a>
