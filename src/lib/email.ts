@@ -169,6 +169,83 @@ The WelcomeFresh Security Team
     `
   }),
 
+  passwordReset: (name: string, resetUrl: string) => ({
+    subject: 'Reset Your WelcomeFresh Password',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+          <h1 style="margin: 0; font-size: 28px;">🔐 Password Reset Request</h1>
+          <p style="margin: 10px 0 0 0; font-size: 16px;">WelcomeFresh Security</p>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
+          <h2 style="color: #333; margin-top: 0;">Hi ${name},</h2>
+          
+          <p style="color: #666; line-height: 1.6;">
+            We received a request to reset your password for your WelcomeFresh account. If you made this request, click the button below to reset your password.
+          </p>
+          
+          <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc3545;">
+            <h3 style="color: #333; margin-top: 0;">⚠️ Important Security Information:</h3>
+            <ul style="color: #666; line-height: 1.8;">
+              <li>This link will expire in 1 hour for security reasons</li>
+              <li>If you didn't request this reset, please ignore this email</li>
+              <li>Your password will remain unchanged until you click the link</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" 
+               style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; display: inline-block; font-weight: bold;">
+              Reset My Password
+            </a>
+          </div>
+          
+          <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+            <p style="color: #856404; margin: 0; font-size: 14px;">
+              <strong>Can't click the button?</strong> Copy and paste this link into your browser:<br>
+              <span style="word-break: break-all; color: #dc3545;">${resetUrl}</span>
+            </p>
+          </div>
+          
+          <p style="color: #666; line-height: 1.6;">
+            If you have any questions or concerns, please contact our support team immediately.
+          </p>
+          
+          <p style="color: #666; line-height: 1.6;">
+            Best regards,<br>
+            The WelcomeFresh Security Team
+          </p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+          <p>© 2024 WelcomeFresh. All rights reserved.</p>
+        </div>
+      </div>
+    `,
+    text: `
+🔐 Password Reset Request
+
+Hi ${name},
+
+We received a request to reset your password for your WelcomeFresh account. If you made this request, use the link below to reset your password.
+
+Reset your password: ${resetUrl}
+
+⚠️ Important Security Information:
+- This link will expire in 1 hour for security reasons
+- If you didn't request this reset, please ignore this email
+- Your password will remain unchanged until you click the link
+
+If you have any questions or concerns, please contact our support team immediately.
+
+Best regards,
+The WelcomeFresh Security Team
+
+© 2024 WelcomeFresh. All rights reserved.
+    `
+  }),
+
   paymentComplete: (name: string, bookingDetails: Record<string, unknown>) => ({
     subject: 'Payment Confirmed - Your WelcomeFresh Booking is Confirmed!',
     html: `
@@ -285,6 +362,11 @@ export const sendEmail = async (to: string, template: keyof typeof emailTemplate
         data.email as unknown as string, 
         data.timestamp as unknown as string
       );
+    } else if (template === 'passwordReset') {
+      emailTemplate = emailTemplates.passwordReset(
+        data.name as unknown as string,
+        data.resetUrl as unknown as string
+      );
     } else if (template === 'paymentComplete') {
       emailTemplate = emailTemplates.paymentComplete(
         data.name as unknown as string, 
@@ -331,4 +413,8 @@ export const sendLoginEmail = async (name: string, email: string) => {
 
 export const sendPaymentCompleteEmail = async (name: string, email: string, bookingDetails: Record<string, unknown>) => {
   return sendEmail(email, 'paymentComplete', { name, ...bookingDetails });
+};
+
+export const sendPasswordResetEmail = async (name: string, email: string, resetUrl: string) => {
+  return sendEmail(email, 'passwordReset', { name, resetUrl });
 };
